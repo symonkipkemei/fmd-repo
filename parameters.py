@@ -1,6 +1,5 @@
-
 # record the commencement and completion date
-def recording_date ():
+def project_date():
     """generate the date object at time of the recording"""
     global current_date
     from datetime import date
@@ -21,6 +20,7 @@ def recording_date ():
         current_date = date(custom_year, custom_month, custom_date)
     return current_date
 
+
 # record the client name
 
 def client_name():
@@ -35,7 +35,6 @@ def client_name():
               "3. numbers are allowed")
         name = str.lower(input("\nclient's name:"))
 
-
         if " " in name:
             correct = True
             print("first and surname should be joined by hyphen\n"
@@ -46,68 +45,122 @@ def client_name():
     return name
 
 
-def project_genre_type_derived():
-    """Should be derived based on the typology of the project, the user should be
-    able to edit this add or subtract"""
-    global user_index, user_category
+def project_category():
+    """establish the category by reading through the csv file and recording to a
+    dictionary for the user to choose"""
+    global purpose
     import csv
 
-    pesa_dict = {}
-    correct = True
-    while correct:
-        select = str.lower(input("Insert project category (y/n):"))
-
-        # Look at what is available first
-        with open("files/project_category.csv", "r") as f:
-            iterable = csv.reader(f)
-            dd_iterable = list(iterable)
-            index_list = []
-            category_list = []
-            # store the index and the category
-            for item in dd_iterable:
-                index_list.append(item[0])
-                category_list.append(item[1])
-
-        # if yes, lets check if our entry is already used
-        if select == str.lower("y"):
-            # check if index is already used
-            try_again_index = True
-            while try_again_index:
-                user_index = str(input("\ninsert index:"))
-                if user_index in index_list:
-                    print(f"{user_index} already used, try another.")
-                # it should be a digit
-                elif not user_index.isdigit():
-                    print(f"{user_index} is not a digit, try again.")
-                # test passed , user_index released for use
-                else:
-                    print(f"{user_index} recorded")
-                    try_again_index = False
-
-            # check if category already used
-            try_again_category = True
-            # subjecting the user category to test
-            while try_again_category:
-                user_category = str.upper(input("insert new category:"))
-                if user_category in category_list:
-                    print(f"{user_category} already used, try again.")
-                else:
-                    print(f"{user_category} recorded")
-                    try_again_category = False
-
-            # store data
-            data = str(user_index) + "," + str(user_category) + "\n"
-            with open("files/project_category.csv", "a") as f:
-                f.write(data)
-
-        elif select == str.lower("n"):
-            correct = False
-
-        else:
-            print("Wrong input, Try again")
+    category_dict = {}
+    with open("files/project_category.csv", "r") as f:
+        iterable = csv.reader(f)
+        list_iterable = list(iterable)
+        for x in list_iterable:
+            print(f"{x[0]}. {x[1]}")
+            category_dict[int(x[0])] = x[1]
+    user_selection = int(input("Insert option above: "))
+    for x in category_dict:
+        if user_selection == x:
+            purpose = category_dict[x]
+    return purpose
 
 
+def project_source():
+    """establish project source"""
+    global purpose
+    import csv
 
-project_genre_type_derived()
+    category_dict = {}
+    with open("files/project_source.csv", "r") as f:
+        iterable = csv.reader(f)
+        list_iterable = list(iterable)
+        for x in list_iterable:
+            print(f"{x[0]}. {x[1]}")
+            category_dict[int(x[0])] = x[1]
+    user_selection = int(input("Insert option above: "))
+    for x in category_dict:
+        if user_selection == x:
+            purpose = category_dict[x]
+    return purpose
+
+
+def project_scope():
+    global purpose
+    import csv
+
+    category_dict = {}
+    with open("files/project_scope.csv", "r") as f:
+        iterable = csv.reader(f)
+        list_iterable = list(iterable)
+        for x in list_iterable:
+            print(f"{x[0]}. {x[1]}")
+            category_dict[int(x[0])] = x[1]
+    user_selection = int(input("Insert option above: "))
+    for x in category_dict:
+        if user_selection == x:
+            purpose = category_dict[x]
+    return purpose
+
+
+def project_done_by():
+    global purpose
+    import csv
+
+    category_dict = {}
+    with open("files/project_done_by.csv", "r") as f:
+        iterable = csv.reader(f)
+        list_iterable = list(iterable)
+        for x in list_iterable:
+            print(f"{x[0]}. {x[1]}")
+            category_dict[int(x[0])] = x[1]
+    user_selection = int(input("Insert option above: "))
+    for x in category_dict:
+        if user_selection == x:
+            purpose = category_dict[x]
+    return purpose
+
+
+def project_total_fund(doneby):
+    """The total amount payable for the particular project
+    The """
+    project_fund = int(input("Insert project fund in dollars:"))
+    company_fund = 0
+    brian_income = 0
+    symon_income = 0
+    other_income = 0
+    if doneby == "BRIAN":
+        company_fund = (project_fund / 100) * 50
+        brian_income = project_fund - company_fund
+    elif doneby == "SYMON":
+        company_fund = (project_fund / 100) * 50
+        symon_income = project_fund - company_fund
+
+    elif doneby == "SYMON-BRIAN":
+        company_fund = (project_fund / 100) * 50
+        remainder = project_fund -company_fund
+        brian_income = int(input("amount : "))
+        symon_income = int(input("amount : "))
+
+    elif doneby == "OTHER":
+        company_fund = (project_fund / 100) * 10
+        other_fund = project_fund - company_fund
+
+    funds = (project_fund, company_fund, brian_income, symon_income, other_income)
+    return funds
+
+def project_name(date,client_name,category):
+    """establish the name of the project, should be used as primary key"""
+    prjt_name = str(date)+"_"+str(client_name)+str(category)
+    return prjt_name
+
+
+
+commence_date = project_date()
+name = client_name()
+catrg = project_category()
+
+pr = project_name(commence_date, name, catrg)
+
+print(pr)
 
 
