@@ -26,7 +26,7 @@ def project_date():
 def client_name():
     """record the client name for the project"""
     global name
-    print("\n****NAME OF CLIENT*****")
+    print("\n****NAME OF CLIENT****")
     correct = True
     while correct:
         print("\nNote the name should be:\n"
@@ -39,6 +39,10 @@ def client_name():
             correct = True
             print("first and surname should be joined by hyphen\n"
                   "check instructions")
+        elif name is None:
+            correct = True
+            print("a project must have a client, how do you pay bills, without him?")
+
         else:
             correct = False
 
@@ -50,15 +54,15 @@ def project_category():
     dictionary for the user to choose"""
     global purpose
     import csv
-
     category_dict = {}
+    print("\n****PROJECT CATEGORY*****")
     with open("files/project_category.csv", "r") as f:
         iterable = csv.reader(f)
         list_iterable = list(iterable)
         for x in list_iterable:
             print(f"{x[0]}. {x[1]}")
             category_dict[int(x[0])] = x[1]
-    user_selection = int(input("Insert option above: "))
+    user_selection = int(input("Insert category option above: "))
     for x in category_dict:
         if user_selection == x:
             purpose = category_dict[x]
@@ -69,8 +73,8 @@ def project_source():
     """establish project source"""
     global purpose
     import csv
-
     category_dict = {}
+    print("\n****PROJECT SOURCE*****")
     with open("files/project_source.csv", "r") as f:
         iterable = csv.reader(f)
         list_iterable = list(iterable)
@@ -87,8 +91,9 @@ def project_source():
 def project_scope():
     global purpose
     import csv
-
     category_dict = {}
+
+    print("\n****PROJECT SCOPE*****")
     with open("files/project_scope.csv", "r") as f:
         iterable = csv.reader(f)
         list_iterable = list(iterable)
@@ -107,6 +112,8 @@ def project_done_by():
     import csv
 
     category_dict = {}
+    print("\n****PROJECT DONE BY*****")
+
     with open("files/project_done_by.csv", "r") as f:
         iterable = csv.reader(f)
         list_iterable = list(iterable)
@@ -123,6 +130,8 @@ def project_done_by():
 def project_total_fund(doneby):
     """The total amount payable for the particular project
     The """
+    print("\n****PROJECT FUND*****")
+
     project_fund = int(input("Insert project fund in dollars:"))
     company_fund = 0
     brian_income = 0
@@ -150,17 +159,8 @@ def project_total_fund(doneby):
 
 def project_name(date,client_name,category):
     """establish the name of the project, should be used as primary key"""
-    prjt_name = str(date)+"_"+str(client_name)+str(category)
+    prjt_name = str(date)+"_"+str(client_name)+"_"+str(category)
     return prjt_name
 
-
-
-commence_date = project_date()
-name = client_name()
-catrg = project_category()
-
-pr = project_name(commence_date, name, catrg)
-
-print(pr)
 
 
