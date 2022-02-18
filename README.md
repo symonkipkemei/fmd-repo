@@ -22,8 +22,8 @@ Generating reports at the end of every month
 8.client_name
 2.date_completion
 3.project_name
-4.project_genre_source
-5.project_genre_type
+4.project_source
+5.project_category
 5.project_by
 6.project_scope_of_work
 7.project_total_fund
@@ -42,7 +42,7 @@ A binding contract set either with a deposit or escrow or timeline
 The date of end of contract. Contract terminated with release of full pay for
 the work completed
 
-3.project_name
+3.project_name(derived)
 The name of the project. This should meet the following parameters to be classified a project name
 1.(project_commence date)_(firstname_of_the_client)
 This should be the PRIMARY KEY when storing to the database
@@ -55,6 +55,26 @@ Can be categorized based on the source of work, typically:The user should be abl
 
 5.project_genre_type
 Can be further categorized 
+
+
+## Database 
+### 1. project_details
+1. project_name(PRIMARY KEY)
+2. client_name
+3. project_category
+4. project_source
+5. project_scope
+6. date_commencement
+7. date_completion
+
+### 2. project_funds
+1. project_name
+2. project_doneby (PRIMARY KEY)
+3. project_fund
+4. company_fund
+5. userA_income
+6. userB_income
+7. userC_income
 
 
 
