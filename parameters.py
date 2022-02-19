@@ -29,11 +29,11 @@ def client_name():
     print("\n****NAME OF CLIENT****")
     correct = True
     while correct:
-        print("\nNote the name should be:\n"
-              "1. Small caps\n"
-              "2. first and surname should be joined by hyphen\n"
-              "3. numbers are allowed")
-        name = str.lower(input("\nclient's name:"))
+        print("Note the name should be:\n"
+              "* Small caps\n"
+              "* first and surname should be joined by hyphen\n"
+              "* numbers are allowed")
+        name = str.lower(input("\ninsert client's name:"))
 
         if " " in name:
             correct = True
@@ -73,6 +73,7 @@ def project_source():
     """establish project source"""
     global purpose
     import csv
+
     category_dict = {}
     print("\n****PROJECT SOURCE*****")
     with open("files/project_source.csv", "r") as f:
@@ -81,11 +82,17 @@ def project_source():
         for x in list_iterable:
             print(f"{x[0]}. {x[1]}")
             category_dict[int(x[0])] = x[1]
+        print("0. (modify list)")
     user_selection = int(input("Insert option above: "))
     for x in category_dict:
         if user_selection == x:
             purpose = category_dict[x]
-    return purpose
+            return purpose
+
+    if user_selection == 0:
+        change = True
+        return change
+
 
 
 def project_scope():
@@ -127,7 +134,7 @@ def project_done_by():
     return purpose
 
 
-def project_total_fund(doneby):
+def project_funds(doneby):
     """The total amount payable for the particular project
     The """
     print("\n****PROJECT FUND*****")
