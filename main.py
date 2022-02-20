@@ -2,9 +2,7 @@ def main():
     """ engine of the programme"""
 
     from parameters import client_name
-    from parameters import project_source
-    from parameters import project_category
-    from parameters import project_scope
+    from parameters import project_setup
     from parameters import project_date
     from parameters import project_name
     from parameters import project_done_by
@@ -14,38 +12,50 @@ def main():
     from database import insert_project_funds_table
     from database import insert_project_details_table
 
-
-    from configurations import project_source_derived
-
     print("*******FORMODE REPOSITORY**************")
     print("1) Add project to database\n"
-          "2) Project_Configurations\n"
-          "3) Check earnings\n")
+          "2) Check earnings\n")
 
     user_selection = int(input("insert option: "))
 
     if user_selection == 1:
         # Collecting the parameters
 
+        # project category
         client_name = client_name()
-        project_category = project_category()
 
-        change = True
-        while change is True:
-            project_source = project_source()
-            if project_source is True:
-                project_source_derived()
-            else:
-                project_source = project_source()
-                change = False
+        # project category
+        filename = "files/project_category.csv"
+        filetype = "project category"
+        project_category = project_setup(filename, filetype)
 
-        project_scope = project_scope()
+        # project source
+        filename = "files/project_source.csv"
+        filetype = "project source"
+        project_source = project_setup(filename, filetype)
+
+        # project scope
+        filename = "files/project_scope.csv"
+        filetype = "project scope"
+        project_scope = project_setup(filename, filetype)
+
+        # project commencement date
         print("\n****PROJECT DATE COMMENCEMENT*****")
         date_commencement = project_date()
+
+        # project completion date
         print("\n****PROJECT DATE COMPLETION*****")
         date_completion = project_date()
-        project_user = project_done_by()
-        project_name = project_name(date_commencement, client_name, project_category)
+
+        # project user
+        filename = "files/project_done_by.csv"
+        filetype = "project user"
+        project_user = project_setup(filename, filetype)
+
+        # project name ( project key/unique identifier)
+        project_name = project_name(date_commencement, client_name, str.lower(project_category))
+
+        # project funds
         project_fund, company_fund, brian_income, symon_income, other_income = project_funds(project_user)
 
         # feeding to the database
