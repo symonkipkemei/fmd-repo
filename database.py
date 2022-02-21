@@ -25,10 +25,11 @@ def create_tables():
     company_fund integer NOT NULL,
     symon_income integer NOT NULL,
     brian_income integer NOT NULL,
-    other_income integer NOT NULL);""")
+    other_income integer NOT NULL,
+    tax integer NOT NULL);""")
 
     print("Tables connected")
-
+create_tables()
 
 ####################INSERTING INTO THE TABLES#######################
 
@@ -46,13 +47,13 @@ def insert_project_details_table(client_name, project_category, project_source, 
 
 
 def insert_project_funds_table(project_name,project_user,project_fund, company_fund, brian_income, symon_income,
-                               other_income):
+                               other_income, tax):
     """insert data into project_funds_table"""
     # insert into project_funds table
     cursor.execute("""INSERT INTO project_funds(project_name,project_doneby,project_fund,company_fund,symon_income,
-    brian_income,other_income)
-                                    VALUES(?,?,?,?,?,?,?)""", (project_name, project_user, project_fund, company_fund,
-                                                             symon_income, brian_income, other_income))
+    brian_income,other_income,tax)
+                                    VALUES(?,?,?,?,?,?,?,?)""", (project_name, project_user, project_fund, company_fund,
+                                                             symon_income, brian_income, other_income, tax))
     print("project funds details added successfully")
     db.commit()
 
