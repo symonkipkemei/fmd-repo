@@ -44,6 +44,7 @@ def client_name():
 
     return name
 
+
 def project_setup(filename, filetype):
     """establish project source"""
     global purpose
@@ -74,38 +75,76 @@ def project_setup(filename, filetype):
             project_configuration(filename, filetype)
 
 
-def project_funds(doneby):
-    """The total amount payable for the particular project
-    The """
+def project_fund():
+    """Total amount paid for the project"""
     print("\n****PROJECT FUND*****")
+    projectFund = int(input("Amount paid:"))
 
-    project_fund = int(input("Insert project fund in dollars:"))
+    return projectFund
+
+
+def project_funds_distribution(projectSource, doneBy, projectFund):
+    """The total amount payable for the particular project"""
     company_fund = 0
     brian_income = 0
     symon_income = 0
     other_income = 0
-    if doneby == "BRIAN":
-        company_fund = (project_fund / 100) * 50
-        brian_income = project_fund - company_fund
-    elif doneby == "SYMON":
-        company_fund = (project_fund / 100) * 50
-        symon_income = project_fund - company_fund
+    tax = 0
 
-    elif doneby == "SYMON-BRIAN":
-        company_fund = (project_fund / 100) * 50
-        remainder = project_fund - company_fund
-        brian_income = int(input("amount : "))
-        symon_income = int(input("amount : "))
+    if projectSource == "FIVERR":
+        shareable_fund = (projectFund / 100) * 80
+        tax = (projectFund / 100) * 20
+    else:
+        shareable_fund = projectFund
 
-    elif doneby == "OTHER":
-        company_fund = (project_fund / 100) * 10
-        other_fund = project_fund - company_fund
+    if doneBy == "BRIAN":
+        company_fund = (shareable_fund / 100) * 50
+        brian_income = shareable_fund - company_fund
+    elif doneBy == "SYMON":
+        company_fund = (shareable_fund / 100) * 50
+        symon_income = shareable_fund - company_fund
 
-    funds = (project_fund, company_fund, brian_income, symon_income, other_income)
+    elif doneBy == "SYMON-BRIAN":
+        company_fund = (shareable_fund / 100) * 50
+        sharable_income = shareable_fund - company_fund
+        print("\n*****SHAREABLE_FORMULA *****\n"
+              "Symon(s):Brian(B)\n"
+              "1)50%S : 50%B \n"
+              "2)15%S : 85B% \n"
+              "3)85%S : 15B% \n"
+              "4)80%S : 20B% \n"
+              "5)20%S : 80%B ")
+        shareable_formula = input("insert formula:")
+
+        if shareable_formula == 1:
+            symon_income = sharable_income / 2
+            brian_income = sharable_income / 2
+
+        elif shareable_formula == 2:
+            symon_income = (shareable_fund / 100) * 15
+            brian_income = (shareable_fund / 100) * 85
+
+        elif shareable_formula == 3:
+            symon_income = (shareable_fund / 100) * 85
+            brian_income = (shareable_fund / 100) * 15
+
+        elif shareable_formula == 4:
+            symon_income = (shareable_fund / 100) * 80
+            brian_income = (shareable_fund / 100) * 20
+
+        elif shareable_formula == 5:
+            symon_income = (shareable_fund / 100) * 20
+            brian_income = (shareable_fund / 100) * 80
+
+    elif doneBy == "OTHER":
+        company_fund = (shareable_fund / 100) * 10
+        other_fund = shareable_fund - company_fund
+
+    funds = (company_fund, brian_income, symon_income, other_income, tax)
     return funds
 
 
-def project_name(date, client_name, category):
+def project_name(date, clientName, category):
     """establish the name of the project, should be used as primary key"""
-    prjt_name = str(date) + "_" + str(client_name) + "_" + str(category)
+    prjt_name = str(date) + "_" + str(clientName) + "_" + str(category)
     return prjt_name
