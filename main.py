@@ -5,8 +5,8 @@ def main():
     from parameters import project_setup
     from parameters import project_date
     from parameters import project_name
-    from parameters import project_done_by
-    from parameters import project_funds
+    from parameters import project_fund
+    from parameters import project_funds_distribution
 
     from database import create_tables
     from database import insert_project_funds_table
@@ -47,23 +47,28 @@ def main():
         print("\n****PROJECT DATE COMPLETION*****")
         date_completion = project_date()
 
+        # project fund
+        project_fund = project_fund()
+
         # project user
         filename = "files/project_done_by.csv"
-        filetype = "project user"
+        filetype = "project bee"
         project_user = project_setup(filename, filetype)
 
         # project name ( project key/unique identifier)
         project_name = project_name(date_commencement, client_name, str.lower(project_category))
 
         # project funds
-        project_fund, company_fund, brian_income, symon_income, other_income = project_funds(project_user)
+        company_fund, brian_income, symon_income, other_income, tax = project_funds_distribution(project_source,
+                                                                                                 project_user,
+                                                                                                 project_fund)
 
         # feeding to the database
         create_tables()
         insert_project_details_table(client_name, project_category, project_source, project_scope, date_commencement,
                                      date_completion, project_name)
         insert_project_funds_table(project_name, project_user, project_fund, company_fund, brian_income, symon_income,
-                                   other_income)
+                                   other_income, tax)
 
 
 main()
