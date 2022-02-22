@@ -4,6 +4,7 @@ import sqlite3
 with sqlite3.connect("formode_repository.db") as db:
     cursor = db.cursor()
 
+
 ####################CREATTING TABLES#######################
 def create_tables():
     """create tables"""
@@ -29,33 +30,43 @@ def create_tables():
     tax integer NOT NULL);""")
 
     print("Tables connected")
+
+
 create_tables()
+
 
 ####################INSERTING INTO THE TABLES#######################
 
 def insert_project_details_table(client_name, project_category, project_source, project_scope,
                                  date_commencement, date_completion, project_name):
-
     """insert data into project_details_table"""
     # insert into project_details table
     cursor.execute("""INSERT INTO project_details(project_name,client_name,project_category,project_source,
     project_scope,date_commencement,date_completion)
                                 VALUES(?,?,?,?,?,?,?)""", (project_name, client_name, project_category, project_source,
-                                                         project_scope, date_commencement,date_completion))
+                                                           project_scope, date_commencement, date_completion))
     print("project details added successfully")
     db.commit()
 
 
-def insert_project_funds_table(project_name,project_user,project_fund, company_fund, brian_income, symon_income,
+def insert_project_funds_table(project_name, project_user, project_fund, company_fund, brian_income, symon_income,
                                other_income, tax):
     """insert data into project_funds_table"""
     # insert into project_funds table
     cursor.execute("""INSERT INTO project_funds(project_name,project_doneby,project_fund,company_fund,symon_income,
     brian_income,other_income,tax)
                                     VALUES(?,?,?,?,?,?,?,?)""", (project_name, project_user, project_fund, company_fund,
-                                                             symon_income, brian_income, other_income, tax))
+                                                                 symon_income, brian_income, other_income, tax))
     print("project funds details added successfully")
     db.commit()
 
+
+def alter_table():
+    """Add column to a table"""
+    print("******ADD COLUMN TO DATABASE******")
+    table_name = input("name of table:")
+    column_name = input("name of column:")
+    data_type = input("data type:")
+    cursor.execute(f"""ALTER TABLE {table_name} ADD {column_name} {data_type} ;""")
 
 
