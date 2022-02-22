@@ -106,7 +106,7 @@ def project_funds_distribution(projectSource, doneBy, projectFund):
 
     elif doneBy == "SYMON-BRIAN":
         company_fund = (shareable_fund / 100) * 50
-        sharable_income = shareable_fund - company_fund
+        sharable_income = (shareable_fund / 100) * 50
         print("\n*****SHAREABLE_FORMULA *****\n"
               "Symon(s):Brian(B)\n"
               "1)50%S : 50%B \n"
@@ -114,31 +114,31 @@ def project_funds_distribution(projectSource, doneBy, projectFund):
               "3)85%S : 15B% \n"
               "4)80%S : 20B% \n"
               "5)20%S : 80%B ")
-        shareable_formula = input("insert formula:")
+        shareable_formula = int(input("insert formula:"))
 
         if shareable_formula == 1:
             symon_income = sharable_income / 2
             brian_income = sharable_income / 2
 
         elif shareable_formula == 2:
-            symon_income = (shareable_fund / 100) * 15
-            brian_income = (shareable_fund / 100) * 85
+            symon_income = (sharable_income / 100) * 15
+            brian_income = (sharable_income / 100) * 85
 
         elif shareable_formula == 3:
-            symon_income = (shareable_fund / 100) * 85
-            brian_income = (shareable_fund / 100) * 15
+            symon_income = (sharable_income / 100) * 85
+            brian_income = (sharable_income / 100) * 15
 
         elif shareable_formula == 4:
-            symon_income = (shareable_fund / 100) * 80
-            brian_income = (shareable_fund / 100) * 20
+            symon_income = (sharable_income / 100) * 80
+            brian_income = (sharable_income / 100) * 20
 
         elif shareable_formula == 5:
-            symon_income = (shareable_fund / 100) * 20
-            brian_income = (shareable_fund / 100) * 80
+            symon_income = (sharable_income / 100) * 20
+            brian_income = (sharable_income / 100) * 80
 
     elif doneBy == "OTHER":
         company_fund = (shareable_fund / 100) * 10
-        other_fund = shareable_fund - company_fund
+        other_fund = (shareable_fund / 100) * 90
 
     funds = (company_fund, brian_income, symon_income, other_income, tax)
     return funds
@@ -146,5 +146,10 @@ def project_funds_distribution(projectSource, doneBy, projectFund):
 
 def project_name(date, clientName, category):
     """establish the name of the project, should be used as primary key"""
-    prjt_name = str(date) + "_" + str(clientName) + "_" + str(category)
+    cleaned_date = str(date)
+    cleaned_date.replace(cleaned_date, "-", "")
+    print(cleaned_date)
+    prjt_name = str(cleaned_date) + "_" + str(clientName) + "_" + str(category)
     return prjt_name
+
+
