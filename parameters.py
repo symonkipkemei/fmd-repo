@@ -146,10 +146,11 @@ def project_funds_distribution(projectSource, doneBy, projectFund):
 
 def project_name(date, clientName, category):
     """establish the name of the project, should be used as primary key"""
-    cleaned_date = str(date)
-    cleaned_date.replace(cleaned_date, "-", "")
-    print(cleaned_date)
-    prjt_name = str(cleaned_date) + "_" + str(clientName) + "_" + str(category)
+    # date converted to string
+    date_object = str(date)
+    # date string abstracted to the 2 digits of the year,month and day
+    record_date = date_object[2:4] + date_object[5:7] + date_object[8:10]
+    prjt_name = record_date + "_" + str(clientName) + "_" + str(category)
     return prjt_name
 
 
