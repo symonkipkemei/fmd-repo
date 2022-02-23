@@ -70,3 +70,86 @@ def alter_table():
     cursor.execute(f"""ALTER TABLE {table_name} ADD {column_name} {data_type} ;""")
 
 
+def view_salary():
+    """Change the values recorded and ammend with new values"""
+
+    from datetime import datetime
+    correct = True
+    while correct:
+        print("\n*****************************************VIEW INCOME*****************************************")
+        # months dictionary
+        year = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct",
+                11: "Nov", 12: "Dec"}
+
+        year_indexed = list(year)
+
+        # loop through the month
+        for months in year:
+            print(f"{months}.{year[months]}", end="  ")
+        print(" 0.Quit")
+
+        select_month = int(input("\nselect option: "))
+
+        if select_month == 0:
+            correct = False
+
+        company_fund = 0
+        symon_income = 0
+        brian_income = 0
+        other_income = 0
+        total_fund = 0
+
+        # company fund
+
+        cursor.execute("""SELECT project_funds.company_fund, project_details.date_completion FROM project_funds, 
+                    project_details """)
+        for row in cursor.fetchall():
+            value = row[0]
+            date = row[1]
+            month = int(date[5:7])
+            if month == select_month:
+                company_fund += value
+
+        # symon income
+        cursor.execute("""SELECT project_funds.symon_income, project_details.date_completion FROM project_funds, 
+                    project_details """)
+        for row in cursor.fetchall():
+            value = row[0]
+            date = row[1]
+            month = int(date[5:7])
+            if month == select_month:
+                symon_income += value
+
+        # Brian income
+        cursor.execute("""SELECT project_funds.brian_income, project_details.date_completion FROM project_funds, 
+                    project_details """)
+        for row in cursor.fetchall():
+            value = row[0]
+            date = row[1]
+            month = int(date[5:7])
+            if month == select_month:
+                brian_income += value
+
+        # employee income
+        cursor.execute("""SELECT project_funds.other_income, project_details.date_completion FROM project_funds, 
+                    project_details """)
+        for row in cursor.fetchall():
+            value = row[0]
+            date = row[1]
+            month = int(date[5:7])
+            if month == select_month:
+                other_income += value
+
+        year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
+                9: "SEPTEMBER", 10: "OCTOBER", 11: "NOVEMBER", 12: "DECEMBER"}
+
+        print(f"\n******INCOME STATS {str.upper(year[select_month])}*******")
+
+        print(f"COMPANY FUND = ${company_fund}")
+        print(f"SYMON INCOME = ${symon_income}")
+        print(f"BRIAN INCOME = ${brian_income}")
+        print(f"EMPLOYEE INCOME = ${other_income}")
+
+        print("********************************")
+        print(f"TOTAL FUND = ${company_fund + brian_income + symon_income + other_income}\n")
+
