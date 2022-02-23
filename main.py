@@ -11,6 +11,7 @@ def main():
     from database import create_tables
     from database import insert_project_funds_table
     from database import insert_project_details_table
+    from database import view_salary
 
     print("*******FORMODE REPOSITORY**************")
     print("1) Add project to database\n"
@@ -69,6 +70,10 @@ def main():
                                      date_completion, project_name)
         insert_project_funds_table(project_name, project_user, project_fund, company_fund, brian_income, symon_income,
                                    other_income, tax)
+
+    elif user_selection == 2:
+        view_salary()
+
 
 
 main()
