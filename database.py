@@ -153,3 +153,53 @@ def view_salary():
         print("********************************")
         print(f"TOTAL FUND = ${company_fund + brian_income + symon_income + other_income}\n")
 
+
+def view_projects():
+    """View all projects in the database"""
+
+    print("\n**************************************SELECT PROJECTS**********************************************")
+    # months dictionary
+    year = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct",
+            11: "Nov", 12: "Dec"}
+
+    # loop through the month
+    for months in year:
+        print(f"{months}.{year[months]}", end="  ")
+    print(" 0.Quit")
+
+    select_month = int(input("select month: "))
+
+    year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
+            9: "SEPTEMBER", 10: "OCTOBER", 11: "NOVEMBER", 12: "DECEMBER"}
+
+    print(
+        f"\n*****************************PROJECTS COMPLETED ON {year[select_month]} **************************************")
+    # Print projects
+    projects = {}
+    cursor.execute("""SELECT project_name, date_commencement FROM project_details""")
+    for index, row in enumerate(cursor.fetchall()):
+        value = row[0]
+        date = row[1]
+        month = int(date[5:7])
+
+        if month == select_month:
+            num = index + 1
+            projects[num] = value
+            print(f"{index + 1}. {value} ")
+
+    print("******************************************************************************************")
+
+    # select projects to be edited
+    project_index_sel = int(input("select project: "))
+    pj_name = projects[project_index_sel]
+
+    print(f"\n****************{str.upper(pj_name)} MODIFICATION **************")
+    print("1) Delete project\n"
+          "2) Edit project parameters")
+    user_select = int(input("user option:"))
+
+    if user_select == 1:
+        cursor.execute("""DELETE FROM project_details WHERE project_name =?""", [pj_name])
+        cursor.fetchall()
+        print(f"{pj_name} deleted")
+        db.commit()
