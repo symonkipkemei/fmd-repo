@@ -94,65 +94,73 @@ def view_salary():
         if select_month == 0:
             correct = False
 
-        company_fund = 0
-        symon_income = 0
-        brian_income = 0
-        other_income = 0
-        total_fund = 0
+        elif select_month in range(1, 13):
+            company_fund = 0
+            symon_income = 0
+            brian_income = 0
+            other_income = 0
+            total_fund = 0
 
-        # company fund
+            # company fund
 
-        cursor.execute("""SELECT project_funds.company_fund, project_details.date_completion FROM project_funds, 
-                    project_details """)
-        for row in cursor.fetchall():
-            value = row[0]
-            date = row[1]
-            month = int(date[5:7])
-            if month == select_month:
-                company_fund += value
+            cursor.execute("""SELECT project_funds.company_fund, project_details.date_completion FROM project_funds, 
+                                project_details """)
+            for row in cursor.fetchall():
+                if row[1] is not None:
+                    value = row[0]
+                    date = row[1]
+                    month = int(date[5:7])
+                    if month == select_month:
+                        company_fund += value
 
-        # symon income
-        cursor.execute("""SELECT project_funds.symon_income, project_details.date_completion FROM project_funds, 
-                    project_details """)
-        for row in cursor.fetchall():
-            value = row[0]
-            date = row[1]
-            month = int(date[5:7])
-            if month == select_month:
-                symon_income += value
+            # symon income
+            cursor.execute("""SELECT project_funds.symon_income, project_details.date_completion FROM project_funds, 
+                                project_details """)
+            for row in cursor.fetchall():
+                if row[1] is not None:
+                    value = row[0]
+                    date = row[1]
+                    month = int(date[5:7])
+                    if month == select_month:
+                        symon_income += value
 
-        # Brian income
-        cursor.execute("""SELECT project_funds.brian_income, project_details.date_completion FROM project_funds, 
-                    project_details """)
-        for row in cursor.fetchall():
-            value = row[0]
-            date = row[1]
-            month = int(date[5:7])
-            if month == select_month:
-                brian_income += value
+            # Brian income
+            cursor.execute("""SELECT project_funds.brian_income, project_details.date_completion FROM project_funds, 
+                                project_details """)
+            for row in cursor.fetchall():
+                if row[1] is not None:
+                    value = row[0]
+                    date = row[1]
+                    month = int(date[5:7])
+                    if month == select_month:
+                        brian_income += value
 
-        # employee income
-        cursor.execute("""SELECT project_funds.other_income, project_details.date_completion FROM project_funds, 
-                    project_details """)
-        for row in cursor.fetchall():
-            value = row[0]
-            date = row[1]
-            month = int(date[5:7])
-            if month == select_month:
-                other_income += value
+            # employee income
+            cursor.execute("""SELECT project_funds.other_income, project_details.date_completion FROM project_funds, 
+                                project_details """)
+            for row in cursor.fetchall():
+                if row[1] is not None:
+                    value = row[0]
+                    date = row[1]
+                    month = int(date[5:7])
+                    if month == select_month:
+                        other_income += value
 
-        year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
-                9: "SEPTEMBER", 10: "OCTOBER", 11: "NOVEMBER", 12: "DECEMBER"}
+            year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
+                    9: "SEPTEMBER", 10: "OCTOBER", 11: "NOVEMBER", 12: "DECEMBER", 0: "CLOSED"}
 
-        print(f"\n******INCOME STATS {str.upper(year[select_month])}*******")
+            print(f"\n******INCOME STATS {str.upper(year[select_month])}*******")
 
-        print(f"COMPANY FUND = ${company_fund}")
-        print(f"SYMON INCOME = ${symon_income}")
-        print(f"BRIAN INCOME = ${brian_income}")
-        print(f"EMPLOYEE INCOME = ${other_income}")
+            print(f"COMPANY FUND = ${company_fund}")
+            print(f"SYMON INCOME = ${symon_income}")
+            print(f"BRIAN INCOME = ${brian_income}")
+            print(f"EMPLOYEE INCOME = ${other_income}")
 
-        print("********************************")
-        print(f"TOTAL FUND = ${company_fund + brian_income + symon_income + other_income}\n")
+            print("********************************")
+            print(f"TOTAL FUND = ${company_fund + brian_income + symon_income + other_income}\n")
+
+        else:
+            print("Guess you live in mars.There are 12 months here on Earth,try again.")
 
 
 def view_projects():
@@ -242,7 +250,8 @@ def retrieve_source_user(data):
         return values
 
 
-def mark_active_complete(project_name, date_completion, project_fund, company_fund, symon_income, brian_income, other_income,
+def mark_active_complete(project_name, date_completion, project_fund, company_fund, symon_income, brian_income,
+                         other_income,
                          tax):
     """" mark project complete """
     # update project_details table
