@@ -38,13 +38,14 @@ create_tables()
 ####################INSERTING INTO THE TABLES#######################
 
 def insert_project_details_table(client_name, project_category, project_source, project_scope,
-                                 date_commencement, date_completion, project_name):
+                                 date_commencement, date_completion, project_name, project_status):
     """insert data into project_details_table"""
     # insert into project_details table
     cursor.execute("""INSERT INTO project_details(project_name,client_name,project_category,project_source,
-    project_scope,date_commencement,date_completion)
-                                VALUES(?,?,?,?,?,?,?)""", (project_name, client_name, project_category, project_source,
-                                                           project_scope, date_commencement, date_completion))
+    project_scope,date_commencement,date_completion,project_status)
+                                VALUES(?,?,?,?,?,?,?,?)""",
+                   (project_name, client_name, project_category, project_source,
+                    project_scope, date_commencement, date_completion, project_status))
     print("project details added successfully")
     db.commit()
 
@@ -203,3 +204,55 @@ def view_projects():
         cursor.fetchall()
         print(f"{pj_name} deleted")
         db.commit()
+
+
+def active_projects():
+    """Display active projects, ask user if he/she wants to complete them"""
+    cursor.execute("""SELECT project_name FROM project_details WHERE project_status = 'ACTIVE'""")
+
+    print(f"\n*****************************ACTIVE PROJECTS **************************************")
+    projects = {}
+    for index, row in enumerate(cursor.fetchall()):
+        num = index + 1
+        value = row[0]
+        projects[num] = value
+        print(f"{num}. {value}")
+    print("0. Go back")
+    print(f"************************************************************************************")
+
+    selection = int(input("Mark project complete:"))
+
+    if selection == 0:
+        return None
+
+    else:
+        selected_project = projects[selection]
+        print(f"{selected_project} marked complete")
+        return selected_project
+
+
+def retrieve_source_user(data):
+    """retrieve source and user of the selected project"""
+    cursor.execute("""SELECT project_details.project_source,project_funds.project_doneby 
+    FROM project_details, project_funds WHERE project_details.project_name = project_funds.project_name 
+    AND project_details.project_name=?""", [data])
+
+    for row in cursor.fetchall():
+        values = (row[0], row[1])
+        return values
+
+
+def mark_active_complete(project_name, date_completion, project_fund, company_fund, symon_income, brian_income, other_income,
+                         tax):
+    """" mark project complete """
+    # update project_details table
+    cursor.execute("""UPDATE project_details SET project_status = 'COMPLETE', date_completion = ? 
+    WHERE project_name = ?""", [date_completion, project_name])
+
+    # update project_funds table
+    cursor.execute("""UPDATE project_funds SET project_fund=?,company_fund=?,symon_income=?,
+    brian_income=?,other_income=?,tax=? WHERE project_name = ?""",
+                   [project_fund, company_fund, symon_income, brian_income,
+                    other_income, tax, project_name])
+    print("project updated completely")
+    db.commit()
