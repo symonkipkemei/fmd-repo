@@ -75,7 +75,7 @@ def project_setup(filename, filetype):
             project_configuration(filename, filetype)
 
 
-def project_fund():
+def project_funds():
     """Total amount paid for the project"""
     print("\n****PROJECT FUND*****")
     projectFund = int(input("Amount paid:"))
@@ -152,5 +152,4 @@ def project_name(date, clientName, category):
     record_date = date_object[2:4] + date_object[5:7] + date_object[8:10]
     prjt_name = record_date + "_" + str(clientName) + "_" + str(category)
     return prjt_name
-
 
