@@ -78,7 +78,7 @@ def project_setup(filename, filetype):
 def project_funds():
     """Total amount paid for the project"""
     print("\n****PROJECT FUND*****")
-    projectFund = int(input("Amount paid:"))
+    projectFund = float(input("Amount paid:"))
 
     return projectFund
 
