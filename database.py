@@ -185,11 +185,11 @@ def view_projects():
         f"\n*****************************PROJECTS COMPLETED ON {year[select_month]} **************************************")
     # Print projects
     projects = {}
-    cursor.execute("""SELECT project_name, date_commencement FROM project_details""")
+    cursor.execute("""SELECT project_funds.project_name FROM project_funds""")
     for index, row in enumerate(cursor.fetchall()):
         value = row[0]
-        date = row[1]
-        month = int(date[5:7])
+        #date = row[1]
+        month = 2
 
         if month == select_month:
             num = index + 1
@@ -208,7 +208,7 @@ def view_projects():
     user_select = int(input("user option:"))
 
     if user_select == 1:
-        cursor.execute("""DELETE FROM project_details WHERE project_name =?""", [pj_name])
+        cursor.execute("""DELETE FROM project_funds WHERE project_name =?""", [pj_name])
         cursor.fetchall()
         print(f"{pj_name} deleted")
         db.commit()
