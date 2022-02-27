@@ -34,7 +34,7 @@ def main():
             # Collecting the parameters
 
             # project category
-            client_name = client_name()
+            name_client = client_name()
 
             # project category
             filename = "files/project_category.csv"
@@ -76,7 +76,7 @@ def main():
             project_user = project_setup(filename, filetype)
 
             # project name ( project key/unique identifier)
-            project_name = project_name(date_commencement, client_name, str.lower(project_category))
+            name_project = project_name(date_commencement, name_client, str.lower(project_category))
 
             # project funds
             company_fund, brian_income, symon_income, other_income, tax = project_funds_distribution(project_source,
@@ -85,10 +85,10 @@ def main():
 
             # feeding to the database
             create_tables()
-            insert_project_details_table(client_name, project_category, project_source, project_scope,
+            insert_project_details_table(name_client, project_category, project_source, project_scope,
                                          date_commencement,
-                                         date_completion, project_name, project_status)
-            insert_project_funds_table(project_name, project_user, project_fund, company_fund, brian_income,
+                                         date_completion, name_project, project_status)
+            insert_project_funds_table(name_project, project_user, project_fund, company_fund, brian_income,
                                        symon_income,
                                        other_income, tax)
         # check earnings
