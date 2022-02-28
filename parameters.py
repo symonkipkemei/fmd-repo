@@ -15,7 +15,7 @@ def project_date():
     elif user_option == 2:
         custom_date = int(input("date:"))
         custom_month = int(input("month:"))
-        custom_year = int(input("year"))
+        custom_year = int(input("year:"))
 
         current_date = date(custom_year, custom_month, custom_date)
     return current_date
@@ -136,9 +136,11 @@ def project_funds_distribution(projectSource, doneBy, projectFund):
             symon_income = (sharable_income / 100) * 20
             brian_income = (sharable_income / 100) * 80
 
-    elif doneBy == "OTHER":
+    elif doneBy == "EMPLOYEE":
         company_fund = (shareable_fund / 100) * 10
-        other_fund = (shareable_fund / 100) * 90
+        other_income = (shareable_fund / 100) * 90
+
+    print(other_income)
 
     funds = (company_fund, brian_income, symon_income, other_income, tax)
     return funds
