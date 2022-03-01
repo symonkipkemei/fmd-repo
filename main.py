@@ -137,3 +137,5 @@ def main():
 main()
 
 # see you on monday for greater works!
+
+# unless the lord builds the hous, those who build it labour in vain.
