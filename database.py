@@ -164,12 +164,14 @@ def view_projects():
     for index, row in enumerate(cursor.fetchall()):
         value = row[0]
         date = row[1]
-        month = int(date[5:7])
+        if date is not None:
+            list_date = list(date)
+            month = int(list_date[5] + list_date[6])
 
-        if month == select_month:
-            num = index + 1
-            projects[num] = value
-            print(f"{index + 1}. {value} ")
+            if month == select_month:
+                num = index + 1
+                projects[num] = value
+                print(f"{index + 1}. {value} ")
 
     print("******************************************************************************************")
 
