@@ -76,5 +76,22 @@ Can be further categorized
 6. userB_income
 7. userC_income
 
+### updating the projects listed
+
+### OBJ 02. Recording company fund
+#### Parameters
+1.date_expenditure
+2.category of income
+3.category of expenditure
+2.expenditure fund
+3.income fund
+3.sub_category of expenditure
+4.Net income
+
+#### Database
+record all the parameters
 
 
+
+
+### OBJ 03. Recording project fund distribution
