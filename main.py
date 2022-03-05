@@ -139,3 +139,5 @@ main()
 # see you on monday for greater works!
 
 # unless the lord builds the hous, those who build it labour in vain.
+
+# this week I have been slow,hope next week things pick up
