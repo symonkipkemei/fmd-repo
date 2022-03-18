@@ -47,32 +47,42 @@ def client_name():
 
 def project_setup(filename, filetype):
     """establish project source"""
-    global purpose
-    import csv
-    from configurations import project_configuration
+    restart = True
+    while restart :
+        try:
+            global purpose
+            import csv
+            from configurations import project_configuration
 
-    file_type_upper = str.upper(filetype)
+            file_type_upper = str.upper(filetype)
 
-    try_again = True
-    while try_again:
-        category_dict = {}
-        print(f"\n****{file_type_upper}*****")
-        with open(filename, "r") as f:
-            iterable = csv.reader(f)
-            list_iterable = list(iterable)
-            for x in list_iterable:
-                print(f"{x[0]}. {x[1]}")
-                category_dict[int(x[0])] = x[1]
-            print("0. (modify list)")
-        user_selection = int(input("Insert option above: "))
+            try_again = True
+            while try_again:
+                category_dict = {}
+                with open(filename, "r") as f:
+                    print(f"\n****{file_type_upper}*****")
+                    iterable = csv.reader(f)
+                    list_iterable = list(iterable)
+                    for x in list_iterable:
+                        print(f"{x[0]}. {x[1]}")
+                        category_dict[int(x[0])] = x[1]
+                    print("0. (modify list)")
+                user_selection = int(input("Insert option above: "))
 
-        for x in category_dict:
-            if user_selection == x:
-                purpose = category_dict[x]
-                try_again = False
-                return purpose
-        if user_selection == 0:
-            project_configuration(filename, filetype)
+                for x in category_dict:
+                    if user_selection == x:
+                        purpose = category_dict[x]
+                        try_again = False
+                        return purpose
+                if user_selection == 0:
+                    project_configuration(filename, filetype)
+
+                restart = False
+
+        except FileNotFoundError:
+            f = open(filename, "w")
+            f.close()
+            restart = True
 
 
 def project_funds():
