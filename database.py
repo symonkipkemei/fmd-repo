@@ -29,6 +29,17 @@ def create_tables():
     other_income integer NOT NULL,
     tax integer NOT NULL);""")
 
+    # pesa_funds table
+    cursor.execute("""CREATE TABLE IF NOT EXISTS pesa_funds(
+        time_id text PRIMARY KEY,
+        funds_date text NOT NULL,
+        co_fund_type text NOT NULL,
+        co_sub_type text NOT NULL,
+        typology text,
+        currency text NOT NULL,
+        amount integer NOT NULL,
+        er_income integer);""")
+
     print("Tables connected")
 
 
@@ -59,6 +70,18 @@ def insert_project_funds_table(project_name, project_user, project_fund, company
                                     VALUES(?,?,?,?,?,?,?,?)""", (project_name, project_user, project_fund, company_fund,
                                                                  symon_income, brian_income, other_income, tax))
     print("project funds details added successfully")
+    db.commit()
+
+
+def insert_pesa_funds_table(time_id, funds_date, co_fund_type, co_sub_type, typology, currency,
+                            amount, er_income):
+    """insert data into project_funds_table"""
+    # insert into project_funds table
+    cursor.execute("""INSERT INTO pesa_funds(time_id,funds_date,co_fund_type,co_sub_type,typology,
+    currency,amount,er_income)
+                                    VALUES(?,?,?,?,?,?,?,?)""", (time_id, funds_date, co_fund_type, co_sub_type,
+                                                                 typology, currency, amount, er_income))
+    print("pesa funds details added successfully")
     db.commit()
 
 
@@ -126,13 +149,13 @@ def view_salary():
 
             print(f"\n******INCOME STATS {str.upper(year[select_month])}*******")
 
-            print(f"COMPANY FUND = ${round(company_sum,1)}")
-            print(f"SYMON INCOME = ${round(symon_sum,1)}")
-            print(f"BRIAN INCOME = ${round(brian_sum,1)}")
-            print(f"EMPLOYEE INCOME = ${round(employee_sum,1)}")
+            print(f"COMPANY FUND = ${round(company_sum, 1)}")
+            print(f"SYMON INCOME = ${round(symon_sum, 1)}")
+            print(f"BRIAN INCOME = ${round(brian_sum, 1)}")
+            print(f"EMPLOYEE INCOME = ${round(employee_sum, 1)}")
 
             print("********************************")
-            print(f"TOTAL FUND = ${round((company_sum + symon_sum + brian_sum + employee_sum),1)}\n")
+            print(f"TOTAL FUND = ${round((company_sum + symon_sum + brian_sum + employee_sum), 1)}\n")
 
         else:
             print("Guess you live in mars.There are 12 months here on Earth,try again.")
