@@ -79,6 +79,50 @@ Can be further categorized
 ### updating the projects listed
 
 ### OBJ 02. Recording company fund
+Note that the abbreviation :
+1. co stands for company
+2. exp stands for expenditures
+
+### co_fund_type
+1. income
+2. expenditure
+
+### co-income (company fund)
+This is funds made from :
+1. all projects payed
+   filter the mode of payment
+   1.1 KSH
+   1.2 DOLLARS
+2. Loans re-payed
+2. exchange rate
+
+### co-exp (company expenditures)
+This is what is being subtracted from the formode fund.These are:
+1. Salaries
+2. r_cost (running cost)
+3. Loan
+
+### co-exp-salaries (company expenditures salaries)
+The salaries are based on the performance/the effort and amount of work handled by the employee
+1. employee A
+2. employee B
+3. employee C
+
+### co-exp-loans (company expenditures loans/welfare support)
+1. employee A
+2. employee B
+3. employee C
+
+### co-exp-cost (The running cost)
+1. electricity
+2. rent
+3. others
+
+
+### co-net-funds
+The remaining balance after expenditures have been subtracted
+for that particular month
+
 #### Parameters
 1.date_expenditure
 2.category of income
