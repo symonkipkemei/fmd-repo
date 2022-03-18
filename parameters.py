@@ -21,6 +21,17 @@ def project_date():
     return current_date
 
 
+# the timestamp id
+
+def time_id():
+    """the following function records the year/month/day/hour/minute/seconds
+    and uses it as a key in a database"""
+    from datetime import datetime
+
+    now = datetime.now()
+    time_key = now.strftime("%Y%m%d%H%M%S")
+    return time_key
+
 # record the client name
 
 def client_name():
