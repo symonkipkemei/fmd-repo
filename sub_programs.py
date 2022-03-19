@@ -9,13 +9,14 @@ from parameters import time_id
 from database import create_tables
 from database import insert_project_funds_table
 from database import insert_project_details_table
-from database import insert_pesa_funds_table
+from database import insert_into_pesafunds
 from database import view_salary
 from database import view_projects
 from database import alter_table
 from database import active_projects
 from database import mark_active_complete
 from database import retrieve_source_user
+from database import delete_from_pesafunds, net_fund
 
 
 def add_project_to_database():
@@ -104,12 +105,13 @@ def view_active_projects():
                              other_income, tax)
 
 
-def formode_funds():
+def add_to_pesafunds():
     """This section controls how the company funds are distributed and used """
     # primary key
     time_key = time_id()
 
     # date of funding
+    print("\n********DATE OF TRANSACTION****** ")
     funds_date = project_date()
 
     # co_fund_type
@@ -139,14 +141,14 @@ def formode_funds():
         if currency == "KSH":
             # Amount of income
             print(f"\n**** AMOUNT OF INCOME({currency})*****")
-            projects_income = int(input("insert project income:"))
+            amount = int(input("insert project income:"))
             er_income = 0
 
         elif currency == "DOLLAR":
             # Amount of income
             print(f"\n**** AMOUNT OF INCOME({currency})*****")
             projects_income_dollars = int(input("insert income:"))
-            rate = int(input("input $/ksh exchange rate:"))
+            rate = float(input("input $/ksh exchange rate:"))
             amount = projects_income_dollars * 100
             er_income = projects_income_dollars * (rate - 100)
 
@@ -186,5 +188,41 @@ def formode_funds():
 
     funds = (time_key, funds_date, co_fund_type, co_sub_type, typology, currency, amount, er_income)
 
-    insert_pesa_funds_table(time_key, funds_date, co_fund_type, co_sub_type, typology, currency, amount, er_income)
+    insert_into_pesafunds(time_key, funds_date, co_fund_type, co_sub_type, typology, currency, amount, er_income)
+    net_fund()
+
+
+
+def formode_funds():
+    """controlling fuds in the wallet"""
+    correct = True
+    while correct:
+        print("*******FORMODE FUNDS**************")
+        print("1) Add funds to wallet\n"
+              "2) Check net-funds\n"
+              "3) Check total-income\n"
+              "4) Check total-expenditure\n"
+              "5) Delete funds\n"
+              "6) Quit")
+        print("**********************************")
+        user_selection = int(input("insert option: "))
+
+        if user_selection == 1:
+            add_to_pesafunds()
+        elif user_selection == 2:
+            net_fund()
+        elif user_selection == 3:
+            print("coming soon")
+        elif user_selection == 4:
+            print("coming soon")
+        elif user_selection == 5:
+            delete_from_pesafunds()
+        elif user_selection == 6:
+            correct = False
+            print("""Consistency is a key element, without which a leader is incapable of getting respect, 
+            success or even developing confidence in others.\nThank you!""")
+
+        else:
+            print("Wrong input, try again")
+
 
