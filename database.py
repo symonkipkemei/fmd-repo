@@ -73,18 +73,6 @@ def insert_project_funds_table(project_name, project_user, project_fund, company
     db.commit()
 
 
-def insert_pesa_funds_table(time_id, funds_date, co_fund_type, co_sub_type, typology, currency,
-                            amount, er_income):
-    """insert data into project_funds_table"""
-    # insert into project_funds table
-    cursor.execute("""INSERT INTO pesa_funds(time_id,funds_date,co_fund_type,co_sub_type,typology,
-    currency,amount,er_income)
-                                    VALUES(?,?,?,?,?,?,?,?)""", (time_id, funds_date, co_fund_type, co_sub_type,
-                                                                 typology, currency, amount, er_income))
-    print("pesa funds details added successfully")
-    db.commit()
-
-
 def alter_table():
     """Add column to a table"""
     print("******ADD COLUMN TO DATABASE******")
@@ -269,3 +257,56 @@ def mark_active_complete(project_name, date_completion, project_fund, company_fu
                     other_income, tax, project_name])
     print("project updated completely")
     db.commit()
+
+
+################## PESA FUNDS TABLE ##########################
+
+
+def insert_into_pesafunds(time_id, funds_date, co_fund_type, co_sub_type, typology, currency,
+                          amount, er_income):
+    """insert data into project_funds_table"""
+    # insert into project_funds table
+    cursor.execute("""INSERT INTO pesa_funds(time_id,funds_date,co_fund_type,co_sub_type,typology,
+    currency,amount,er_income)
+                                    VALUES(?,?,?,?,?,?,?,?)""", (time_id, funds_date, co_fund_type, co_sub_type,
+                                                                 typology, currency, amount, er_income))
+    print("pesa funds details added successfully")
+    db.commit()
+
+
+def delete_from_pesafunds():
+    """insert item to be deleted from pesa funds"""
+    id = str(input("insert id: "))
+    cursor.execute("""DELETE FROM pesa_funds WHERE time_id =?""", [id])
+    cursor.fetchall()
+
+    print(f"{id} has been deleted")
+    db.commit()
+
+
+def net_fund():
+    """The difference between the income and expenditure"""
+    print(
+        f"\n*****************************FUND STATS**************************************")
+    total_income = 0
+    total_expenditure = 0
+    cursor.execute("""SELECT co_fund_type,amount,er_income FROM pesa_funds""")
+    for index, row in enumerate(cursor.fetchall()):
+        co_fund_type = row[0]
+        amount = int(row[1])
+        er_income = int(row[2])
+
+        if co_fund_type == "INCOME":
+            total_income += (amount + er_income)
+        elif co_fund_type == "EXPENDITURE":
+            total_expenditure += (amount + er_income)
+        else:
+            print("wrong input")
+
+    net_funds = total_income - total_expenditure
+    print(f"total income:ksh {total_income}")
+    print(f"total expenditure:Ksh {total_expenditure}")
+    print(f"Net fund:ksh {net_funds}")
+
+    print("*****************************************************************************\n")
+
