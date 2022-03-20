@@ -310,3 +310,40 @@ def net_fund():
 
     print("*****************************************************************************\n")
 
+
+def income_breakdown():
+    """breakdown income into respective sources"""
+    print(f"\n*****************************INCOME BREAKDOWN*********************************")
+    total_income = 0
+    fiverr_total = 0
+    physical_total = 0
+    r_loans_total = 0
+    er_total = 0
+    cursor.execute("""SELECT co_fund_type,co_sub_type,currency,amount,er_income FROM pesa_funds""")
+    for index, row in enumerate(cursor.fetchall()):
+        co_fund_type = row[0]
+        co_sub_type = row[1]
+        currency = row[2]
+        amount = int(row[3])
+        er_income = int(row[4])
+
+        if co_fund_type == "INCOME":
+            if co_sub_type == "PROJECTS":
+                if currency == "DOLLAR":
+                    fiverr_total += amount
+                    er_total += er_income
+                elif currency == "KSH":
+                    physical_total += amount
+
+            elif co_sub_type == "R_LOANS":
+                r_loans_total += amount
+
+    total_income = fiverr_total + er_total + physical_total + r_loans_total
+
+    print(f"fiverr_total:ksh {fiverr_total}")
+    print(f"exchange rate_total:Ksh {er_total}")
+    print(f"physical_total:ksh {physical_total}")
+    print(f"re-payed loans:ksh {r_loans_total}")
+    print("*****************************************************************************")
+    print(f"total_income:ksh {total_income}\n")
+
