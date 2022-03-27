@@ -156,6 +156,19 @@ def project_funds_distribution(projectSource, doneBy, projectFund):
         elif shareable_formula == 5:
             symon_income = (sharable_income / 100) * 20
             brian_income = (sharable_income / 100) * 80
+    elif doneBy == "SYMON-EMPLOYEE":
+        company_fund = (shareable_fund / 100) * 50
+        sharable_income = (shareable_fund / 100) * 50
+        other_income = int(input("insert employee income:"))
+        symon_income = sharable_income - other_income
+        print(f"symon income is {symon_income}")
+
+    elif doneBy == "BRIAN-EMPLOYEE":
+        company_fund = (shareable_fund / 100) * 50
+        sharable_income = (shareable_fund / 100) * 50
+        other_income = int(input("insert employee income:"))
+        brian_income = sharable_income - other_income
+        print(f"Brian income is {brian_income}")
 
     elif doneBy == "EMPLOYEE":
         company_fund = (shareable_fund / 100) * 10
