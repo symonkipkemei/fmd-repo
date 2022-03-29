@@ -171,10 +171,18 @@ def view_projects():
         f"\n*****************************PROJECTS COMPLETED ON {year[select_month]} **************************************")
     # Print projects
     projects = {}
-    cursor.execute("""SELECT project_name,date_completion FROM project_details""")
+    revenue_sum =0
+    cursor.execute("""SELECT project_details.project_name,project_details.date_completion,project_funds.project_fund
+     FROM project_details,project_funds WHERE project_details.project_name =project_funds.project_name""")
+    
     for index, row in enumerate(cursor.fetchall()):
         value = row[0]
         date = row[1]
+        funds = row[2]
+        #revenue after taxation
+        revenue = (funds * 0.8)
+
+        # filter incomplete projects
         if date is not None:
             list_date = list(date)
             month = int(list_date[5] + list_date[6])
@@ -182,29 +190,35 @@ def view_projects():
             if month == select_month:
                 num = index + 1
                 projects[num] = value
-                print(f"{index + 1}. {value} ")
+                print(f"{index + 1}. {value}--{funds} ")
+                revenue_sum += revenue
 
+    print("0. Go back")
     print("******************************************************************************************")
+    print(f"REVENUE : {revenue_sum}")
 
     # select projects to be edited
     project_index_sel = int(input("select project: "))
-    pj_name = projects[project_index_sel]
 
-    print(f"\n****************{str.upper(pj_name)} MODIFICATION **************")
-    print("1) Delete project\n"
+    #return back
+    if project_index_sel == 0:
+        return None
+
+    else:
+        pj_name = projects[project_index_sel]
+        print(f"\n****************{str.upper(pj_name)} MODIFICATION **************")
+        print("1) Delete project\n"
           "2) Edit project parameters")
-    user_select = int(input("user option:"))
+        user_select = int(input("user option:"))
 
-    if user_select == 1:
-        # delete from project funds
-        cursor.execute("""DELETE FROM project_funds WHERE project_name =?""", [pj_name])
-        # delete from project details
-        cursor.execute("""DELETE FROM project_details WHERE project_name =?""", [pj_name])
-        cursor.fetchall()
-        print(f"{pj_name} deleted")
-
-        db.commit()
-
+        if user_select == 1:
+            # delete from project funds
+            cursor.execute("""DELETE FROM project_funds WHERE project_name =?""", [pj_name])
+            # delete from project details
+            cursor.execute("""DELETE FROM project_details WHERE project_name =?""", [pj_name])
+            cursor.fetchall()
+            print(f"{pj_name} deleted")
+            db.commit()
 
 def active_projects():
     """Display active projects, ask user if he/she wants to complete them"""
