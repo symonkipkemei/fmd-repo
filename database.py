@@ -361,3 +361,120 @@ def income_breakdown():
     print("*****************************************************************************")
     print(f"total_income:ksh {total_income}\n")
 
+
+
+def expenditure_breakdown():
+    """breakdown expenditure into salaries, running cost, loans for every 
+    particular month, have an option that shows the total sum of running cost, salaries and loans"""
+
+
+    # SALARIES VARIABLES
+    brian_salary= 0
+    symon_salary = 0
+    employee_salary = 0
+
+    # RUNNING COST VARIABLES
+    rent_cost = 0
+    electricity_cost = 0
+    internet_cost = 0
+    gas_cost = 0
+    domain_cost = 0
+    e_purchase_repair_cost = 0
+    co_registration_cost = 0
+    retreat_cost = 0
+    csr_cost = 0
+    shopping_cost = 0
+
+    # LOAN COAST VARIABLES
+    malcom_loan  = 0
+    brian_loan = 0
+
+    print("\n**************************************SELECT MONTH**********************************************")
+    # months dictionary
+    year = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct",
+            11: "Nov", 12: "Dec"}
+
+    # loop through the month
+    for months in year:
+        print(f"{months}.{year[months]}", end="  ")
+    print(" 0.Go back")
+
+    select_month = int(input("select month: "))
+
+    year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
+            9: "SEPTEMBER", 10: "OCTOBER", 11: "NOVEMBER", 12: "DECEMBER"}
+
+    print(f"\n*****************************EXPENDITURE ON {year[select_month]} **************************************")
+
+
+    cursor.execute("""SELECT funds_date, co_fund_type,co_sub_type,typology,amount FROM pesa_funds""")
+    for index, row in enumerate(cursor.fetchall()):
+        date = row[0]
+        co_fund_type = row[1]
+        co_sub_type = row[2]
+        typology = row[3]
+        amount = int(row[4])
+
+        # filter incomplete projects, remain with apppropiate month
+        if date is not None:
+            list_date = list(date)
+            month = int(list_date[5] + list_date[6])
+            if month == select_month:
+
+                # filter income,remain with expenditure
+                if co_fund_type == "EXPENDITURE":
+                    # filter,remain with salaries
+                    if co_sub_type == "SALARIES":
+                        if typology == "SYMON":
+                            symon_salary += amount
+                            print(amount)
+                        elif typology == "BRIAN":
+                            brian_salary += amount
+                        elif typology == "EMPLOYEE":
+                            employee_salary += amount
+                    #filter,remain with running cost
+                    elif co_sub_type == "RUNNING_COST":
+                        if typology == "RENT":
+                            rent_cost += amount
+                        elif typology == "ELECTRICITY":
+                            electricity_cost += amount
+                        elif typology == "INTERNET":
+                            internet_cost += amount
+                        elif typology == "RETREAT":
+                            retreat_cost += amount
+                        elif typology == "DOMIAN":
+                            domain_cost += amount
+                        elif typology == "SHOPPING":
+                            shopping_cost += amount
+                        elif typology == "GAS":
+                            gas_cost += amount
+                        elif typology == "CSR":
+                            csr_cost += amount
+                        elif typology == "E-PURCHASE_REPAIR":
+                            e_purchase_repair_cost += amount
+                        elif typology == "C0-REGISTRATION":
+                            co_registration_cost += amount
+
+                    #filter, remain with loans
+                    elif co_sub_type == "LOANS":
+                        if typology == "MALCOM":
+                            malcom_loan += malcom_loan
+                        elif typology == "BRIAN":
+                            brian_loan += brian_loan
+
+
+    print("\n***********SALARIES *************")
+    print(f"BRIAN : {brian_salary}/=\nSYMON : {symon_salary}/=\nEMPLOYEE : {employee_salary}/=")
+    print("**********************************")
+
+
+    print("\n***********RUNNING COST *************")
+    print(f"RENT : {rent_cost}/=\nELECRICTY : {electricity_cost}/=\nINTERNET : {internet_cost}/=\nGAS : {gas_cost}/=\nDOMAIN : {domain_cost}/=\nE-PURCHASE_REPAIR : {e_purchase_repair_cost}/=\nC0_REGISTRATION : {co_registration_cost}/=\nRETREAT : {retreat_cost}/=\nCSR : {csr_cost}/=\nSHOPPING : {shopping_cost}/=")
+    print("**********************************")
+
+    print("\n ***********LOANS *************")
+    print(f"BRIAN : {brian_loan}/=\nMALCOM : {malcom_loan}/=")
+    print("**********************************")
+
+    print("\n**********************************************************************************************\n")
+    
