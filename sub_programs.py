@@ -16,7 +16,7 @@ from database import alter_table
 from database import active_projects
 from database import mark_active_complete
 from database import retrieve_source_user
-from database import delete_from_pesafunds, net_fund,income_breakdown
+from database import delete_from_pesafunds, net_fund,income_breakdown,expenditure_breakdown
 
 
 def add_project_to_database():
@@ -200,7 +200,7 @@ def formode_funds():
               "3) Check total-income\n"
               "4) Check total-expenditure\n"
               "5) Delete funds\n"
-              "6) Quit")
+              "6) Go back")
         print("**********************************")
         user_selection = int(input("insert option: "))
 
@@ -211,7 +211,7 @@ def formode_funds():
         elif user_selection == 3:
             income_breakdown()
         elif user_selection == 4:
-            print("coming soon")
+            expenditure_breakdown()
         elif user_selection == 5:
             delete_from_pesafunds()
         elif user_selection == 6:
