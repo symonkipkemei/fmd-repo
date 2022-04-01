@@ -237,7 +237,7 @@ def active_projects():
     selection = int(input("Mark project complete:"))
 
     if selection == 0:
-        return None
+        return 0
 
     else:
         selected_project = projects[selection]
@@ -404,8 +404,7 @@ def expenditure_breakdown():
     year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
             9: "SEPTEMBER", 10: "OCTOBER", 11: "NOVEMBER", 12: "DECEMBER"}
 
-    print(f"\n*****************************EXPENDITURE ON {year[select_month]} **************************************")
-
+    print(f"\n************EXPENDITURE ON {year[select_month]} (AMOUNT WITHDRAWN FROM ACCOUNT) ***************")
 
     cursor.execute("""SELECT funds_date, co_fund_type,co_sub_type,typology,amount FROM pesa_funds""")
     for index, row in enumerate(cursor.fetchall()):
@@ -427,7 +426,6 @@ def expenditure_breakdown():
                     if co_sub_type == "SALARIES":
                         if typology == "SYMON":
                             symon_salary += amount
-                            print(amount)
                         elif typology == "BRIAN":
                             brian_salary += amount
                         elif typology == "EMPLOYEE":
@@ -442,7 +440,7 @@ def expenditure_breakdown():
                             internet_cost += amount
                         elif typology == "RETREAT":
                             retreat_cost += amount
-                        elif typology == "DOMIAN":
+                        elif typology == "DOMAIN":
                             domain_cost += amount
                         elif typology == "SHOPPING":
                             shopping_cost += amount
@@ -458,23 +456,23 @@ def expenditure_breakdown():
                     #filter, remain with loans
                     elif co_sub_type == "LOANS":
                         if typology == "MALCOM":
-                            malcom_loan += malcom_loan
+                            malcom_loan += amount
                         elif typology == "BRIAN":
-                            brian_loan += brian_loan
+                            brian_loan += amount
 
 
-    print("\n***********SALARIES *************")
+    print("\n***********SALARIES ************")
     print(f"BRIAN : {brian_salary}/=\nSYMON : {symon_salary}/=\nEMPLOYEE : {employee_salary}/=")
-    print("**********************************")
+    #print("**********************************")
 
 
-    print("\n***********RUNNING COST *************")
+    print("\n***********RUNNING COST *********")
     print(f"RENT : {rent_cost}/=\nELECRICTY : {electricity_cost}/=\nINTERNET : {internet_cost}/=\nGAS : {gas_cost}/=\nDOMAIN : {domain_cost}/=\nE-PURCHASE_REPAIR : {e_purchase_repair_cost}/=\nC0_REGISTRATION : {co_registration_cost}/=\nRETREAT : {retreat_cost}/=\nCSR : {csr_cost}/=\nSHOPPING : {shopping_cost}/=")
-    print("**********************************")
+    #print("**********************************")
 
-    print("\n ***********LOANS *************")
+    print("\n***********LOANS ****************")
     print(f"BRIAN : {brian_loan}/=\nMALCOM : {malcom_loan}/=")
-    print("**********************************")
+    #print("***********************************")
 
-    print("\n**********************************************************************************************\n")
+    print("\n***************************************************************************\n")
     

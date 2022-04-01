@@ -85,21 +85,25 @@ def add_project_to_database():
 
 def view_active_projects():
     option = active_projects()
-    # project completion date
-    print("\n****PROJECT DATE COMPLETION*****")
-    date_completion = project_date()
+    if option == 0:
+        return None
+    else:
+        # project completion date
+        print("\n****PROJECT DATE COMPLETION*****")
+        date_completion = project_date()
 
-    # project fund
-    project_fund = project_funds()
-    project_source, project_user = retrieve_source_user(option)
+        # project fund
+        project_fund = project_funds()
+        project_source, project_user = retrieve_source_user(option)
 
-    # project funds
-    company_fund, brian_income, symon_income, other_income, tax = project_funds_distribution(project_source,
+        # project funds
+        company_fund, brian_income, symon_income, other_income, tax = project_funds_distribution(project_source,
                                                                                                  project_user,
                                                                                                  project_fund)
 
-    mark_active_complete(option, date_completion, project_fund, company_fund, symon_income, brian_income,
+        mark_active_complete(option, date_completion, project_fund, company_fund, symon_income, brian_income,
                              other_income, tax)
+
 
 
 def add_to_pesafunds():
