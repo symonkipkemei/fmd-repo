@@ -198,13 +198,13 @@ def formode_funds():
     """controlling fuds in the wallet"""
     correct = True
     while correct:
-        print("*******FORMODE FUNDS**************")
+        print("\n*******FORMODE FUNDS**************")
         print("1) Add funds to wallet\n"
               "2) Check net-funds\n"
               "3) Check total-income\n"
               "4) Check total-expenditure\n"
               "5) Delete funds\n"
-              "6) Go back")
+              "0) Go back")
         print("**********************************")
         user_selection = int(input("insert option: "))
 
@@ -218,7 +218,7 @@ def formode_funds():
             expenditure_breakdown()
         elif user_selection == 5:
             delete_from_pesafunds()
-        elif user_selection == 6:
+        elif user_selection == 0:
             correct = False
             print("""Consistency is a key element, without which a leader is incapable of getting respect, 
             success or even developing confidence in others.\nThank you!""")

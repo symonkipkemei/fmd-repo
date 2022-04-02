@@ -152,7 +152,7 @@ def view_salary():
 def view_projects():
     """View all projects in the database"""
 
-    print("\n**************************************SELECT PROJECTS**********************************************")
+    print("\n**************************************SELECT PROJECTS********************************")
     # months dictionary
     year = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct",
             11: "Nov", 12: "Dec"}
@@ -160,15 +160,14 @@ def view_projects():
     # loop through the month
     for months in year:
         print(f"{months}.{year[months]}", end="  ")
-    print(" 0.Go back")
-
+    print("\n")
     select_month = int(input("select month: "))
 
     year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
             9: "SEPTEMBER", 10: "OCTOBER", 11: "NOVEMBER", 12: "DECEMBER"}
 
     print(
-        f"\n*****************************PROJECTS COMPLETED ON {year[select_month]} **************************************")
+        f"\n*****************************PROJECTS COMPLETED ON {year[select_month]} *******************************")
     # Print projects
     projects = {}
     revenue_sum =0
@@ -194,7 +193,7 @@ def view_projects():
                 revenue_sum += revenue
 
     print("0. Go back")
-    print("******************************************************************************************")
+    print("**************************************************************************************")
     print(f"REVENUE : {revenue_sum}")
 
     # select projects to be edited
@@ -327,7 +326,75 @@ def net_fund():
 
 def income_breakdown():
     """breakdown income into respective sources"""
-    print(f"\n*****************************INCOME BREAKDOWN*********************************")
+
+
+    # VARIABLES
+    er_income_total = 0
+    fiverr_total = 0
+    physical_total = 0
+    repayed_loans_total = 0
+    competition_total = 0
+
+    print("\n**************************************SELECT MONTH**********************************************")
+    # months dictionary
+    year = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct",
+            11: "Nov", 12: "Dec"}
+
+    # loop through the month
+    for months in year:
+        print(f"{months}.{year[months]}", end="  ")
+    print(" 0.Go back")
+
+    select_month = int(input("select month: "))
+
+    year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
+            9: "SEPTEMBER", 10: "OCTOBER", 11: "NOVEMBER", 12: "DECEMBER"}
+
+    print(f"\n************INCOME ON {year[select_month]} (AMOUNT DEPOSITED TO BANK ACCOUNT) ***************")
+
+    cursor.execute("""SELECT funds_date, co_fund_type,co_sub_type,currency,amount,er_income FROM pesa_funds""")
+    for index, row in enumerate(cursor.fetchall()):
+        date = row[0]
+        co_fund_type = row[1]
+        co_sub_type = row[2]
+        currency = row[3]
+        amount = int(row[4])
+        er_income = int(row[5])
+
+        # filter incomplete projects, remain with apppropiate month
+        if date is not None:
+            list_date = list(date)
+            month = int(list_date[5] + list_date[6])
+            if month == select_month:
+
+                # filter expenditure,remain with income
+                if co_fund_type == "INCOME":
+                    # filter,remain with projects
+                    if co_sub_type == "PROJECTS":
+                        if currency == "DOLLAR":
+                            fiverr_total += amount
+                            er_income_total += er_income
+                        elif currency == "KSH":
+                            physical_total += amount
+                    elif co_sub_type == "R_LOANS":
+                        repayed_loans_total += amount
+
+    print("\n***********PROJECTS ************")
+    print(f"FIVERR PROJECTS: {fiverr_total}/=\nPHYSICAL PROJECTS : {physical_total}/=\nCOMPETITION PROJECTS : {competition_total}/=")
+    print("********************************")
+    projects_total = fiverr_total + physical_total + competition_total
+    print(f"PROJECTS TOTAL:{projects_total}/=")
+
+    print(f"EXCHANGE RATE INCOME : {er_income_total}/=")
+    print(f"REPAYED LOANS : {repayed_loans_total}/=")
+    
+    total_income = projects_total + repayed_loans_total + er_income_total
+    print("\n*********************************************************************************")
+    print(f"TOTAL INCOME: {total_income}/=")
+
+def income_summary():
+    "summary of income 2022"
+    print(f"\n*****************************INCOME SUMMARY 2022 *********************************")
     total_income = 0
     fiverr_total = 0
     physical_total = 0
@@ -358,7 +425,7 @@ def income_breakdown():
     print(f"exchange rate_total:Ksh {er_total}")
     print(f"physical_total:ksh {physical_total}")
     print(f"re-payed loans:ksh {r_loans_total}")
-    print("*****************************************************************************")
+    print("**************************************************************************")
     print(f"total_income:ksh {total_income}\n")
 
 
@@ -404,7 +471,7 @@ def expenditure_breakdown():
     year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
             9: "SEPTEMBER", 10: "OCTOBER", 11: "NOVEMBER", 12: "DECEMBER"}
 
-    print(f"\n************EXPENDITURE ON {year[select_month]} (AMOUNT WITHDRAWN FROM ACCOUNT) ***************")
+    print(f"\n************{year[select_month]} EXPENDITURE ***************\n")
 
     cursor.execute("""SELECT funds_date, co_fund_type,co_sub_type,typology,amount FROM pesa_funds""")
     for index, row in enumerate(cursor.fetchall()):
@@ -461,18 +528,25 @@ def expenditure_breakdown():
                             brian_loan += amount
 
 
-    print("\n***********SALARIES ************")
+    print("***********SALARIES ************")
     print(f"BRIAN : {brian_salary}/=\nSYMON : {symon_salary}/=\nEMPLOYEE : {employee_salary}/=")
-    #print("**********************************")
+    print("********************************")
+    total_salaries = brian_salary + symon_salary + employee_salary
+    print(f"TOTAL:{total_salaries}/=")
 
 
-    print("\n***********RUNNING COST *********")
+    print("\n***********RUNNING COST ********")
     print(f"RENT : {rent_cost}/=\nELECRICTY : {electricity_cost}/=\nINTERNET : {internet_cost}/=\nGAS : {gas_cost}/=\nDOMAIN : {domain_cost}/=\nE-PURCHASE_REPAIR : {e_purchase_repair_cost}/=\nC0_REGISTRATION : {co_registration_cost}/=\nRETREAT : {retreat_cost}/=\nCSR : {csr_cost}/=\nSHOPPING : {shopping_cost}/=")
-    #print("**********************************")
+    print("********************************")
+    total_running_cost = rent_cost + electricity_cost + internet_cost + gas_cost + domain_cost + e_purchase_repair_cost + co_registration_cost + retreat_cost + csr_cost + shopping_cost
+    print(f"TOTAL:{total_running_cost}/=")
 
-    print("\n***********LOANS ****************")
+    print("\n***********LOANS ***************")
     print(f"BRIAN : {brian_loan}/=\nMALCOM : {malcom_loan}/=")
-    #print("***********************************")
+    print("********************************")
+    total_loans = brian_loan + malcom_loan
+    print(f"TOTAL:{total_loans}/=")
 
-    print("\n***************************************************************************\n")
-    
+    print("\n**********************************************")
+    cumulative_total = total_salaries + total_running_cost + total_loans
+    print(f"TOTAL EXPENDITURE :{cumulative_total}/=")

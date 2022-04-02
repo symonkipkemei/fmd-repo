@@ -18,7 +18,7 @@ def main():
               "4) Active projects\n"
               "5) Formode Fund\n"
               "6) Settings\n"
-              "7) Quit")
+              "0) Quit")
         print("**************************************")
         user_selection = int(input("insert option: "))
 
@@ -41,7 +41,7 @@ def main():
         elif user_selection == 6:
             alter_table()
         # Quit
-        elif user_selection == 7:
+        elif user_selection == 0:
             correct = False
             print("""Unless the Lord builds the house,
     those who build it labor in vain.\nThank you!""")
