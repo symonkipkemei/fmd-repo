@@ -139,3 +139,8 @@ record all the parameters
 
 
 ### OBJ 03. Recording project fund distribution
+
+
+## the employee tab
+The new dispensation of beteer is 50 % from 1000 projects than 1000% from 100 projects
+Let's build/systems/infastructure that scales beyond us
