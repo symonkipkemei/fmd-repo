@@ -142,7 +142,12 @@ record all the parameters
 
 
 ## the employee tab
-The new dispensation of beteer is 50 % from 1000 projects than 1000% from 100 projects
+The new dispensation of beteer is 50 % from 1000 projects than 100% from 100 projects
 Let's build/systems/infastructure that scales beyond us
 
 working on the employee tab
+
+
+## update on the currency,
+ we need to update the currency from reading 100 to 110.
+ 
