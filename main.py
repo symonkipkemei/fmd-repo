@@ -11,6 +11,18 @@ def main():
 
     correct = True
     while correct:
+        print("""
+          o__ __o__/_                                                                o               
+ <|    v                                                                    <|>              
+ < >                                                                        < \              
+  |              o__ __o    \o__ __o   \o__ __o__ __o     o__ __o      o__ __o/    o__  __o  
+  o__/_         /v     v\    |     |>   |     |     |>   /v     v\    /v     |    /v      |> 
+  |            />       <\  / \   < >  / \   / \   / \  />       <\  />     / \  />      //  
+ <o>           \         /  \o/        \o/   \o/   \o/  \         /  \      \o/  \o    o/    
+  |             o       o    |          |     |     |    o       o    o      |    v\  /v __o 
+ / \            <\__ __/>   / \        / \   / \   / \   <\__ __/>    <\__  / \    <\/> __/> 
+                                                                                               
+        """)
         print("*******FORMODE REPOSITORY**************")
         print("1) Add project to database\n"
               "2) Check earnings\n"
