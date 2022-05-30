@@ -151,3 +151,7 @@ working on the employee tab
 ## update on the currency,
  we need to update the currency from reading 100 to 110.
  
+
+
+ ## Been away for sometime.
+ but I will be back to strike and make progress once more.

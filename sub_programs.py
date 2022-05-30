@@ -54,17 +54,22 @@ def add_project_to_database():
         # project completion date
         print("\n****PROJECT DATE COMPLETION*****")
         date_completion = project_date()
+
         # project fund
         project_fund = project_funds()
+
+        # project user
+        filename = "files/project_done_by.csv"
+        filetype = "project bee"
+        project_user = project_setup(filename, filetype)
+
+
     else:
         project_fund = 0
         date_completion = None
+        project_user = None
 
-    # project user
-    filename = "files/project_done_by.csv"
-    filetype = "project bee"
-    project_user = project_setup(filename, filetype)
-
+    
     # project name ( project key/unique identifier)
     name_project = project_name(date_commencement, name_client, str.lower(project_category))
 
@@ -94,14 +99,19 @@ def view_active_projects():
 
         # project fund
         project_fund = project_funds()
-        project_source, project_user = retrieve_source_user(option)
+        project_source = retrieve_source_user(option)
+
+        # project user
+        filename = "files/project_done_by.csv"
+        filetype = "project bee"
+        project_user = project_setup(filename, filetype)
 
         # project funds
         company_fund, brian_income, symon_income, other_income, tax = project_funds_distribution(project_source,
                                                                                                  project_user,
                                                                                                  project_fund)
 
-        mark_active_complete(option, date_completion, project_fund, company_fund, symon_income, brian_income,
+        mark_active_complete(option, project_user, date_completion, project_fund, company_fund, symon_income, brian_income,
                              other_income, tax)
 
 

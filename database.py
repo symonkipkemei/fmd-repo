@@ -21,7 +21,7 @@ def create_tables():
     # project_funds table
     cursor.execute("""CREATE TABLE IF NOT EXISTS project_funds(
     project_name text PRIMARY KEY,
-    project_doneby text NOT NULL,
+    project_doneby text ,
     project_fund integer NOT NULL,
     company_fund integer NOT NULL,
     symon_income integer NOT NULL,
@@ -80,6 +80,15 @@ def alter_table():
     column_name = input("name of column:")
     data_type = input("data type:")
     cursor.execute(f"""ALTER TABLE {table_name} ADD {column_name} {data_type} ;""")
+
+
+def alter_null_option():
+    """Add column to a table"""
+    print("******CHANGE COLUMN FROM NOT NULL TO NULL******")
+    table_name = input("name of table:")
+    column_name = input("name of column:")
+    cursor.execute(f"""ALTER TABLE {table_name} MODIFY {column_name} columnType NULL;""")
+
 
 
 def view_salary():
@@ -246,16 +255,14 @@ def active_projects():
 
 def retrieve_source_user(data):
     """retrieve source and user of the selected project"""
-    cursor.execute("""SELECT project_details.project_source,project_funds.project_doneby 
-    FROM project_details, project_funds WHERE project_details.project_name = project_funds.project_name 
-    AND project_details.project_name=?""", [data])
+    cursor.execute("""SELECT project_details.project_source FROM project_details WHERE project_details.project_name=?""", [data])
 
     for row in cursor.fetchall():
-        values = (row[0], row[1])
+        values = row[0]
         return values
 
 
-def mark_active_complete(project_name, date_completion, project_fund, company_fund, symon_income, brian_income,
+def mark_active_complete(project_name, project_doneby, date_completion, project_fund, company_fund, symon_income, brian_income,
                          other_income,
                          tax):
     """" mark project complete """
@@ -264,9 +271,9 @@ def mark_active_complete(project_name, date_completion, project_fund, company_fu
     WHERE project_name = ?""", [date_completion, project_name])
 
     # update project_funds table
-    cursor.execute("""UPDATE project_funds SET project_fund=?,company_fund=?,symon_income=?,
+    cursor.execute("""UPDATE project_funds SET project_doneby=?,project_fund=?,company_fund=?,symon_income=?,
     brian_income=?,other_income=?,tax=? WHERE project_name = ?""",
-                   [project_fund, company_fund, symon_income, brian_income,
+                   [project_doneby,project_fund, company_fund, symon_income, brian_income,
                     other_income, tax, project_name])
     print("project updated completely")
     db.commit()
