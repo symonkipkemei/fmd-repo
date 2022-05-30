@@ -153,5 +153,7 @@ working on the employee tab
  
 
 
- ## Been away for sometime.
- but I will be back to strike and make progress once more.
+ ## feature updates
+ 1. Distribution funds  to (waleed_effect)
+ 2. Change other income table to employee table
+ 3. Replace employee tag on project_bee to name of employee
