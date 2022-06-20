@@ -157,3 +157,8 @@ working on the employee tab
  1. Distribution funds  to (waleed_effect)
  2. Change other income table to employee table
  3. Replace employee tag on project_bee to name of employee
+
+ # salaries_table
+ This table is going to host the respective pays for each individual per project.
+ 
+
