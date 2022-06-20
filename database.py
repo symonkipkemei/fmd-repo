@@ -21,13 +21,22 @@ def create_tables():
     # project_funds table
     cursor.execute("""CREATE TABLE IF NOT EXISTS project_funds(
     project_name text PRIMARY KEY,
-    project_doneby text ,
     project_fund integer NOT NULL,
     company_fund integer NOT NULL,
-    symon_income integer NOT NULL,
-    brian_income integer NOT NULL,
-    other_income integer NOT NULL,
+    salaries integer NOT NULL,
     tax integer NOT NULL);""")
+
+    # salaries_funds
+    cursor.execute("""CREATE TABLE IF NOT EXISTS salaries_funds(
+    project_name text PRIMARY KEY,
+    project_doneby text,
+    director_1 integer,
+    director_2 integer,
+    employee_3 integer,
+    employee_4 integer,
+    employee_5 integer,
+    employee_6 integer);""")
+
 
     # pesa_funds table
     cursor.execute("""CREATE TABLE IF NOT EXISTS pesa_funds(
@@ -40,11 +49,7 @@ def create_tables():
         amount integer NOT NULL,
         er_income integer);""")
 
-    print("Tables connected")
-
-
-create_tables()
-
+    print("project_details connected\nproject_funds connected\nsalaries_funds connected\npesa_funds connected\nYou can now proceed")
 
 ####################INSERTING INTO THE TABLES#######################
 
@@ -61,25 +66,34 @@ def insert_project_details_table(client_name, project_category, project_source, 
     db.commit()
 
 
-def insert_project_funds_table(project_name, project_user, project_fund, company_fund, brian_income, symon_income,
-                               other_income, tax):
+def insert_project_funds_table(project_name, project_fund, company_fund, salaries, tax):
     """insert data into project_funds_table"""
     # insert into project_funds table
-    cursor.execute("""INSERT INTO project_funds(project_name,project_doneby,project_fund,company_fund,symon_income,
-    brian_income,other_income,tax)
-                                    VALUES(?,?,?,?,?,?,?,?)""", (project_name, project_user, project_fund, company_fund,
-                                                                 symon_income, brian_income, other_income, tax))
+    cursor.execute("""INSERT INTO project_funds(project_name,project_fund,company_fund,salaries,tax)
+                                    VALUES(?,?,?,?,?)""", (project_name, project_fund, company_fund,
+                                                                 salaries, tax))
     print("project funds details added successfully")
+    db.commit()
+
+def insert_salaries_funds_table(project_name, project_user, director_1, director_2, employee_3, employee_4, employee_5, employee_6):
+    """insert data into project_funds_table"""
+    # insert into project_funds table
+    cursor.execute("""INSERT INTO salaries_funds(project_name, project_doneby,director_1,director_2,employee_3,employee_4,employee_5,employee_6)
+                                    VALUES(?,?,?,?,?,?,?,?)""", (project_name, project_user, director_1, director_2, employee_3, employee_4, employee_5, employee_6))
+    print("Salaries funds details added successfully")
     db.commit()
 
 
 def alter_table():
-    """Add column to a table"""
+    """change the name of a column in a table"""
     print("******ADD COLUMN TO DATABASE******")
     table_name = input("name of table:")
-    column_name = input("name of column:")
-    data_type = input("data type:")
-    cursor.execute(f"""ALTER TABLE {table_name} ADD {column_name} {data_type} ;""")
+    old_column_name = input("old_column_name:")
+    new_column_name = input("new_column_name:")
+    cursor.execute(f"""ALTER TABLE {table_name} RENAME COLUMN {old_column_name} to {new_column_name} ;""")
+
+    db.commit()
+    print("name changed successfully")
 
 
 def alter_null_option():
@@ -111,48 +125,78 @@ def view_salary():
 
         select_month = int(input("\nselect option: "))
 
+        #variables
+        company_sum = 0
+        salaries_sum = 0
+        director_1_sum = 0
+        director_2_sum = 0
+        employee_3_sum = 0
+        employee_4_sum = 0
+        employee_5_sum = 0
+        employee_6_sum = 0
+
+
         if select_month == 0:
             correct = False
 
         elif select_month in range(1, 13):
-            company_sum = 0
-            symon_sum = 0
-            brian_sum = 0
-            employee_sum = 0
-            total_fund = 0
+            company_fund =0
+            salaries = 0
+            director_1 = 0
+            director_2 = 0
+            employee_3 = 0
+            employee_4 = 0
+            employee_5 = 0
+            employee_6 = 0
 
             # (date_completion,company_fund,symon_income,brian_income,other_income)
 
             cursor.execute("""SELECT project_details.date_completion, project_funds.company_fund,
-            project_funds.symon_income,project_funds.brian_income,project_funds.other_income FROM project_funds, 
-            project_details WHERE project_funds.project_name = project_details.project_name """)
+            project_funds.salaries,salaries_funds.director_1,salaries_funds.director_2,salaries_funds.employee_3,salaries_funds.employee_4,salaries_funds.employee_5,salaries_funds.employee_6 FROM project_funds, 
+            project_details,salaries_funds WHERE project_funds.project_name = project_details.project_name AND project_funds.project_name = salaries_funds.project_name """)
             for row in cursor.fetchall():
                 if row[0] is not None:
                     date_completion = row[0]
                     month = int(date_completion[5:7])
                     company_fund = row[1]
-                    symon_income = row[2]
-                    brian_income = row[3]
-                    other_income = row[4]
+                    salaries = row[2]
+                    director_1 = row[3]
+                    director_2 = row[4]
+                    employee_3 = row[5]
+                    employee_4 = row[6]
+                    employee_5 = row[7]
+                    employee_6 = row[8]
 
                     if month == select_month:
                         company_sum += company_fund
-                        symon_sum += symon_income
-                        brian_sum += brian_income
-                        employee_sum += other_income
+                        salaries_sum += salaries
+                        director_1_sum += director_1
+                        director_2_sum += director_2
+                        employee_3_sum += employee_3
+                        employee_4_sum += employee_4
+                        employee_5_sum += employee_5
+                        employee_6_sum += employee_6
+                        
 
             year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
                     9: "SEPTEMBER", 10: "OCTOBER", 11: "NOVEMBER", 12: "DECEMBER", 0: "CLOSED"}
 
             print(f"\n******INCOME STATS {str.upper(year[select_month])}*******")
 
-            print(f"COMPANY FUND = ${round(company_sum, 1)}")
-            print(f"SYMON INCOME = ${round(symon_sum, 1)}")
-            print(f"BRIAN INCOME = ${round(brian_sum, 1)}")
-            print(f"EMPLOYEE INCOME = ${round(employee_sum, 1)}")
+            
+            print("********************************")
+            print(f"SYMON INCOME = ${round(director_1_sum, 1)}")
+            print(f"BRIAN INCOME = ${round(director_2_sum, 1)}")
+            print(f"WINNIE INCOME = ${round(employee_3_sum, 1)}")
+            print(f"JAMES_KURIA INCOME = ${round(employee_4_sum, 1)}")
+            print(f"MUTISO INCOME = ${round(employee_5_sum, 1)}")
+            print(f"JEFF_KODUK INCOME = ${round(employee_6_sum, 1)}")
 
             print("********************************")
-            print(f"TOTAL FUND = ${round((company_sum + symon_sum + brian_sum + employee_sum), 1)}\n")
+            print(f"SALARIES = ${round(salaries_sum, 1)}")
+            print(f"COMPANY FUND = ${round(company_sum, 1)}")
+
+            print(f"TOTAL FUND = ${round((company_sum + salaries_sum), 1)}\n")
 
         else:
             print("Guess you live in mars.There are 12 months here on Earth,try again.")
@@ -224,6 +268,8 @@ def view_projects():
             cursor.execute("""DELETE FROM project_funds WHERE project_name =?""", [pj_name])
             # delete from project details
             cursor.execute("""DELETE FROM project_details WHERE project_name =?""", [pj_name])
+            # delete from salaries funds
+            cursor.execute("""DELETE FROM salaries_funds WHERE project_name =?""", [pj_name])
             cursor.fetchall()
             print(f"{pj_name} deleted")
             db.commit()
@@ -242,14 +288,14 @@ def active_projects():
     print("0. Go back")
     print(f"************************************************************************************")
 
-    selection = int(input("Mark project complete:"))
+    selection = int(input("Select option:"))
 
     if selection == 0:
         return 0
 
     else:
         selected_project = projects[selection]
-        print(f"{selected_project} marked complete")
+        print(f"{selected_project} selected")
         return selected_project
 
 
@@ -262,21 +308,103 @@ def retrieve_source_user(data):
         return values
 
 
-def mark_active_complete(project_name, project_doneby, date_completion, project_fund, company_fund, symon_income, brian_income,
-                         other_income,
-                         tax):
-    """" mark project complete """
-    # update project_details table
+def update_project_details_table(date_completion, project_name):
+    """Update project details after project marked complete"""
     cursor.execute("""UPDATE project_details SET project_status = 'COMPLETE', date_completion = ? 
     WHERE project_name = ?""", [date_completion, project_name])
-
-    # update project_funds table
-    cursor.execute("""UPDATE project_funds SET project_doneby=?,project_fund=?,company_fund=?,symon_income=?,
-    brian_income=?,other_income=?,tax=? WHERE project_name = ?""",
-                   [project_doneby,project_fund, company_fund, symon_income, brian_income,
-                    other_income, tax, project_name])
-    print("project updated completely")
     db.commit()
+
+
+def update_project_funds_table(project_name, project_fund, company_fund,salaries, tax):
+    """Update project details after project marked complete"""
+    cursor.execute("""UPDATE project_funds SET project_fund=?,company_fund=?,salaries=?,tax =? 
+    WHERE project_name = ?""", [project_fund, company_fund, salaries, tax, project_name])
+    db.commit()
+
+
+def update_salaries_table(project_name, project_doneby, director_1, director_2, employee_3, employee_4, employee_5, employee_6):
+    """Update project details after project marked complete"""
+    cursor.execute("""UPDATE salaries_funds SET project_doneby=?,director_1=?,director_2=?,employee_3=?,employee_4=?,employee_5=?,employee_6=?
+    WHERE project_name = ?""", [project_doneby, director_1, director_2, employee_3, employee_4,employee_5,employee_6, project_name])
+    db.commit()
+
+
+def retrieve_project_quote(project_id):
+    """Establish the size of the bounty displayed to pproject_bees"""
+
+    cursor.execute("""SELECT project_details.project_source,project_funds.project_fund FROM project_details,project_funds WHERE project_details.project_name = project_funds.project_name AND project_details.project_name =?""", [project_id])
+    for row in cursor.fetchall():
+        project_source = row[0]
+        project_fund = float(row[1])
+        
+        if project_source == "FIVERR":
+            client_fee = project_fund
+            distribution_factor = (2/3) # distribution to reality
+            real_fee = distribution_factor * client_fee
+        
+            # real_fee should always be a whole number rounded to 0 or 5 to make it convincing
+            base = 5
+            real_fee = base * round(real_fee /5)
+
+            # optical illusion achieved
+            optical_fee = client_fee - real_fee
+            marketplace_tax_o = 0.2 * optical_fee
+            formode_tax_o = optical_fee - marketplace_tax_o
+
+            # back to reality
+            marketplace_tax_r = 0.2 * real_fee
+            project_bee_salary =round(0.7 * real_fee)
+            formode_tax_r = ( real_fee - ( marketplace_tax_r + project_bee_salary))
+
+            project_quote = real_fee
+            marketplace_fee = marketplace_tax_r
+            formode_fee = formode_tax_r
+            your_fee = project_bee_salary
+
+        elif project_source == "PHYSICAL":
+            
+            client_fee = project_fund
+            distribution_factor = (2/3) # distribution to reality
+            real_fee = distribution_factor * client_fee
+    
+            # real_fee should always be a whole number rounded to 0 or 5 to make it convincing
+            base = 5
+            real_fee = base * round(real_fee /5)
+
+            # optical illusion achieved
+            optical_fee = client_fee - real_fee
+            tax_charge = 0
+            marketplace_tax_o = tax_charge * optical_fee
+            formode_tax_o = optical_fee - marketplace_tax_o
+
+            # back to reality
+
+            # percentage of tax/100
+            visible_tax = 0
+            # amount of tax
+            marketplace_tax_r = visible_tax * real_fee
+            formode_tax_r = round(0.1 * real_fee)
+            project_bee_salary = ( real_fee - ( formode_tax_r + marketplace_tax_r))
+
+
+            project_quote = real_fee
+            marketplace_fee = marketplace_tax_r
+            formode_fee = formode_tax_r
+            your_fee = project_bee_salary
+
+    # Optical deadlines to ensure projects are completed on time always
+    expected_timeline = int(input("Real Timeline (days):"))
+
+    optical_timeline = round(2/3 * (expected_timeline)) 
+
+    print("***********PROJECT QUOTE*************")
+    print(f"Project Quote: {project_quote}")
+    print(f"Marketplace Fee: {marketplace_fee}")
+    print(f"Formode Fee: {formode_fee}")
+    print(f"Your Fee: {your_fee}")
+    print(f"Timeline: {optical_timeline} days")
+
+
 
 
 ################## PESA FUNDS TABLE ##########################
