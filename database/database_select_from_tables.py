@@ -5,105 +5,7 @@ with sqlite3.connect("formode_repository.db") as db:
     cursor = db.cursor()
 
 
-####################CREATTING TABLES#######################
-def create_tables():
-    """create tables"""
-    # project_details table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS project_details(
-    project_name text PRIMARY KEY,
-    client_name text NOT NULL,
-    project_category text NOT NULL,
-    project_source text NOT NULL,
-    project_scope text NOT NULL,
-    date_commencement text NOT NULL,
-    date_completion text );""")
-
-    # project_funds table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS project_funds(
-    project_name text PRIMARY KEY,
-    project_fund integer NOT NULL,
-    company_fund integer NOT NULL,
-    salaries integer NOT NULL,
-    tax integer NOT NULL);""")
-
-    # salaries_funds
-    cursor.execute("""CREATE TABLE IF NOT EXISTS salaries_funds(
-    project_name text PRIMARY KEY,
-    project_doneby text,
-    director_1 integer,
-    director_2 integer,
-    employee_3 integer,
-    employee_4 integer,
-    employee_5 integer,
-    employee_6 integer);""")
-
-
-    # pesa_funds table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS pesa_funds(
-        time_id text PRIMARY KEY,
-        funds_date text NOT NULL,
-        co_fund_type text NOT NULL,
-        co_sub_type text NOT NULL,
-        typology text,
-        currency text NOT NULL,
-        amount integer NOT NULL,
-        er_income integer);""")
-
-    print("project_details connected\nproject_funds connected\nsalaries_funds connected\npesa_funds connected\nYou can now proceed")
-
-####################INSERTING INTO THE TABLES#######################
-
-def insert_project_details_table(client_name, project_category, project_source, project_scope,
-                                 date_commencement, date_completion, project_name, project_status):
-    """insert data into project_details_table"""
-    # insert into project_details table
-    cursor.execute("""INSERT INTO project_details(project_name,client_name,project_category,project_source,
-    project_scope,date_commencement,date_completion,project_status)
-                                VALUES(?,?,?,?,?,?,?,?)""",
-                   (project_name, client_name, project_category, project_source,
-                    project_scope, date_commencement, date_completion, project_status))
-    print("project details added successfully")
-    db.commit()
-
-
-def insert_project_funds_table(project_name, project_fund, company_fund, salaries, tax):
-    """insert data into project_funds_table"""
-    # insert into project_funds table
-    cursor.execute("""INSERT INTO project_funds(project_name,project_fund,company_fund,salaries,tax)
-                                    VALUES(?,?,?,?,?)""", (project_name, project_fund, company_fund,
-                                                                 salaries, tax))
-    print("project funds details added successfully")
-    db.commit()
-
-def insert_salaries_funds_table(project_name, project_user, director_1, director_2, employee_3, employee_4, employee_5, employee_6):
-    """insert data into project_funds_table"""
-    # insert into project_funds table
-    cursor.execute("""INSERT INTO salaries_funds(project_name, project_doneby,director_1,director_2,employee_3,employee_4,employee_5,employee_6)
-                                    VALUES(?,?,?,?,?,?,?,?)""", (project_name, project_user, director_1, director_2, employee_3, employee_4, employee_5, employee_6))
-    print("Salaries funds details added successfully")
-    db.commit()
-
-
-def alter_table():
-    """change the name of a column in a table"""
-    print("******ADD COLUMN TO DATABASE******")
-    table_name = input("name of table:")
-    old_column_name = input("old_column_name:")
-    new_column_name = input("new_column_name:")
-    cursor.execute(f"""ALTER TABLE {table_name} RENAME COLUMN {old_column_name} to {new_column_name} ;""")
-
-    db.commit()
-    print("name changed successfully")
-
-
-def alter_null_option():
-    """Add column to a table"""
-    print("******CHANGE COLUMN FROM NOT NULL TO NULL******")
-    table_name = input("name of table:")
-    column_name = input("name of column:")
-    cursor.execute(f"""ALTER TABLE {table_name} MODIFY {column_name} columnType NULL;""")
-
-
+# select from  project_funds, project_details & salaries_funds 
 
 def view_salary():
     """Change the values recorded and ammend with new values"""
@@ -134,6 +36,7 @@ def view_salary():
         employee_4_sum = 0
         employee_5_sum = 0
         employee_6_sum = 0
+        employee_7_sum = 0
 
 
         if select_month == 0:
@@ -148,11 +51,12 @@ def view_salary():
             employee_4 = 0
             employee_5 = 0
             employee_6 = 0
+            employee_7 = 0
 
             # (date_completion,company_fund,symon_income,brian_income,other_income)
 
             cursor.execute("""SELECT project_details.date_completion, project_funds.company_fund,
-            project_funds.salaries,salaries_funds.director_1,salaries_funds.director_2,salaries_funds.employee_3,salaries_funds.employee_4,salaries_funds.employee_5,salaries_funds.employee_6 FROM project_funds, 
+            project_funds.salaries,salaries_funds.director_1,salaries_funds.director_2,salaries_funds.employee_3,salaries_funds.employee_4,salaries_funds.employee_5,salaries_funds.employee_6,salaries_funds.employee_7 FROM project_funds, 
             project_details,salaries_funds WHERE project_funds.project_name = project_details.project_name AND project_funds.project_name = salaries_funds.project_name """)
             for row in cursor.fetchall():
                 if row[0] is not None:
@@ -166,6 +70,10 @@ def view_salary():
                     employee_4 = row[6]
                     employee_5 = row[7]
                     employee_6 = row[8]
+                    employee_7 = row[9]
+                    # when employer was not yet employed ,null was assigned
+                    if employee_7 is None:
+                        employee_7 = 0
 
                     if month == select_month:
                         company_sum += company_fund
@@ -176,6 +84,7 @@ def view_salary():
                         employee_4_sum += employee_4
                         employee_5_sum += employee_5
                         employee_6_sum += employee_6
+                        employee_7_sum += employee_7
                         
 
             year = {1: "JANUARY", 2: "FEBRUARY", 3: "MARCH", 4: "APRIL", 5: "MAY", 6: "JUNE", 7: "JULY", 8: "AUGUST",
@@ -188,9 +97,10 @@ def view_salary():
             print(f"SYMON INCOME = ${round(director_1_sum, 1)}")
             print(f"BRIAN INCOME = ${round(director_2_sum, 1)}")
             print(f"WINNIE INCOME = ${round(employee_3_sum, 1)}")
-            print(f"JAMES_KURIA INCOME = ${round(employee_4_sum, 1)}")
-            print(f"MUTISO INCOME = ${round(employee_5_sum, 1)}")
-            print(f"JEFF_KODUK INCOME = ${round(employee_6_sum, 1)}")
+            print(f"JEFF_KODUK INCOME = ${round(employee_4_sum, 1)}")
+            print(f"JAMES_KURIA INCOME = ${round(employee_5_sum, 1)}")
+            print(f"MUTISO INCOME = ${round(employee_6_sum, 1)}")
+            print(f"LAMECH INCOME = ${round(employee_7_sum, 1)}")
 
             print("********************************")
             print(f"SALARIES = ${round(salaries_sum, 1)}")
@@ -201,6 +111,8 @@ def view_salary():
         else:
             print("Guess you live in mars.There are 12 months here on Earth,try again.")
 
+
+# select from  project_funds & project_details
 
 def view_projects():
     """View all projects in the database"""
@@ -273,61 +185,6 @@ def view_projects():
             cursor.fetchall()
             print(f"{pj_name} deleted")
             db.commit()
-
-def active_projects():
-    """Display active projects, ask user if he/she wants to complete them"""
-    cursor.execute("""SELECT project_name FROM project_details WHERE project_status = 'ACTIVE'""")
-
-    print(f"\n*****************************ACTIVE PROJECTS **************************************")
-    projects = {}
-    for index, row in enumerate(cursor.fetchall()):
-        num = index + 1
-        value = row[0]
-        projects[num] = value
-        print(f"{num}. {value}")
-    print("0. Go back")
-    print(f"************************************************************************************")
-
-    selection = int(input("Select option:"))
-
-    if selection == 0:
-        return 0
-
-    else:
-        selected_project = projects[selection]
-        print(f"{selected_project} selected")
-        return selected_project
-
-
-def retrieve_source_user(data):
-    """retrieve source and user of the selected project"""
-    cursor.execute("""SELECT project_details.project_source FROM project_details WHERE project_details.project_name=?""", [data])
-
-    for row in cursor.fetchall():
-        values = row[0]
-        return values
-
-
-def update_project_details_table(date_completion, project_name):
-    """Update project details after project marked complete"""
-    cursor.execute("""UPDATE project_details SET project_status = 'COMPLETE', date_completion = ? 
-    WHERE project_name = ?""", [date_completion, project_name])
-    db.commit()
-
-
-def update_project_funds_table(project_name, project_fund, company_fund,salaries, tax):
-    """Update project details after project marked complete"""
-    cursor.execute("""UPDATE project_funds SET project_fund=?,company_fund=?,salaries=?,tax =? 
-    WHERE project_name = ?""", [project_fund, company_fund, salaries, tax, project_name])
-    db.commit()
-
-
-def update_salaries_table(project_name, project_doneby, director_1, director_2, employee_3, employee_4, employee_5, employee_6):
-    """Update project details after project marked complete"""
-    cursor.execute("""UPDATE salaries_funds SET project_doneby=?,director_1=?,director_2=?,employee_3=?,employee_4=?,employee_5=?,employee_6=?
-    WHERE project_name = ?""", [project_doneby, director_1, director_2, employee_3, employee_4,employee_5,employee_6, project_name])
-    db.commit()
-
 
 def retrieve_project_quote(project_id):
     """Establish the size of the bounty displayed to pproject_bees"""
@@ -404,33 +261,42 @@ def retrieve_project_quote(project_id):
     print(f"Your Fee: {your_fee}")
     print(f"Timeline: {optical_timeline} days")
 
+# select from Project_details
+
+def active_projects():
+    """Display active projects, ask user if he/she wants to complete them"""
+    cursor.execute("""SELECT project_name FROM project_details WHERE project_status = 'ACTIVE'""")
+
+    print(f"\n*****************************ACTIVE PROJECTS **************************************")
+    projects = {}
+    for index, row in enumerate(cursor.fetchall()):
+        num = index + 1
+        value = row[0]
+        projects[num] = value
+        print(f"{num}. {value}")
+    print("0. Go back")
+    print(f"************************************************************************************")
+
+    selection = int(input("Select option:"))
+
+    if selection == 0:
+        return 0
+
+    else:
+        selected_project = projects[selection]
+        print(f"{selected_project} selected")
+        return selected_project
+
+def retrieve_source_user(data):
+    """retrieve source and user of the selected project"""
+    cursor.execute("""SELECT project_details.project_source FROM project_details WHERE project_details.project_name=?""", [data])
+
+    for row in cursor.fetchall():
+        values = row[0]
+        return values
 
 
-
-################## PESA FUNDS TABLE ##########################
-
-
-def insert_into_pesafunds(time_id, funds_date, co_fund_type, co_sub_type, typology, currency,
-                          amount, er_income):
-    """insert data into project_funds_table"""
-    # insert into project_funds table
-    cursor.execute("""INSERT INTO pesa_funds(time_id,funds_date,co_fund_type,co_sub_type,typology,
-    currency,amount,er_income)
-                                    VALUES(?,?,?,?,?,?,?,?)""", (time_id, funds_date, co_fund_type, co_sub_type,
-                                                                 typology, currency, amount, er_income))
-    print("pesa funds details added successfully")
-    db.commit()
-
-
-def delete_from_pesafunds():
-    """insert item to be deleted from pesa funds"""
-    id = str(input("insert id: "))
-    cursor.execute("""DELETE FROM pesa_funds WHERE time_id =?""", [id])
-    cursor.fetchall()
-
-    print(f"{id} has been deleted")
-    db.commit()
-
+# select from pesa_funds
 
 def net_fund():
     """The difference between the income and expenditure"""
@@ -457,7 +323,6 @@ def net_fund():
     print(f"Net fund:ksh {net_funds}")
 
     print("*****************************************************************************\n")
-
 
 def income_breakdown():
     """breakdown income into respective sources"""
@@ -562,8 +427,6 @@ def income_summary():
     print(f"re-payed loans:ksh {r_loans_total}")
     print("**************************************************************************")
     print(f"total_income:ksh {total_income}\n")
-
-
 
 def expenditure_breakdown():
     """breakdown expenditure into salaries, running cost, loans for every 

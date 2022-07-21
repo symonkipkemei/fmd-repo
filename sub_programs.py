@@ -9,21 +9,10 @@ from parameters import time_id
 from parameters import salaries_matrix
 from parameters import dollars_ksh
 
-from database import create_tables
-from database import insert_project_funds_table
-from database import insert_project_details_table
-from database import insert_salaries_funds_table
-from database import insert_into_pesafunds
-from database import retrieve_project_quote
-from database import view_projects
-from database import alter_table
-from database import active_projects
-
-from database import update_project_details_table
-from database import update_project_funds_table
-from database import update_salaries_table
-from database import retrieve_source_user
-from database import delete_from_pesafunds, net_fund,income_breakdown,expenditure_breakdown
+from database.database_create_alter_tables import *
+from database.database_delete_from_tables import *
+from database.database_select_from_tables import *
+from database.database_update_insert_into_tables import*
 
 import csv
 
@@ -71,9 +60,6 @@ def add_project_to_database():
         filetype = "project bee"
         project_user = project_setup(filename, filetype)
 
-
-
-
     else:
         if project_source == "PHYSICAL":
             print ("\n***funds in ksh****")
@@ -92,6 +78,7 @@ def add_project_to_database():
         employee_4 = 0
         employee_5 = 0
         employee_6 = 0
+        employee_7 = 0
 
     
     # project name ( project key/unique identifier)
@@ -100,18 +87,19 @@ def add_project_to_database():
     # project funds
     company_fund, salaries, tax = project_funds_distribution_V2(project_source, project_fund)
 
-    # feeding to the database
-    create_tables()
+    # feeding into project_details table
     insert_project_details_table(name_client, project_category, project_source, project_scope,
                                  date_commencement,
                                  date_completion, name_project, project_status)
+    # feeding into project_funds table                           
     insert_project_funds_table(name_project, project_fund, company_fund, salaries, tax)
 
-    insert_salaries_funds_table(name_project, project_user, director_1, director_2, employee_3, employee_4, employee_5, employee_6)
+
+    # feeding into project_funds table   
+    insert_salaries_funds_table(name_project, project_user, director_1, director_2, employee_3, employee_4, employee_5, employee_6, employee_7)
 
 
 def view_active_projects():
-
 
     print("************ACTIVE PROJECTS**********")
     print("1. View project Quote\n2. Mark project Complete")
@@ -174,6 +162,7 @@ def view_active_projects():
                 employee_4 = 0
                 employee_5 = 0
                 employee_6 = 0
+                employee_7 = 0
 
                 #if indecise match, then you've identified the righht person, pay him/her salary
                 with open(filename, "r") as f:
@@ -195,10 +184,12 @@ def view_active_projects():
                                employee_5 = salaries
                             elif bee_code == 6:
                                employee_6 = salaries
+                            elif bee_code == 7:
+                                employee_7 = salaries
                             else:
                                 print("new employer detected, kindly update his/her database.")
                 # update salaries table in the database
-                update_salaries_table(option,project_user,director_1,director_2,employee_3,employee_4,employee_5,employee_6)
+                update_salaries_table(option,project_user,director_1,director_2,employee_3,employee_4,employee_5,employee_6,employee_7)
 
             elif user_input == 2:
                 project_user = "COOPERATE"
@@ -211,6 +202,7 @@ def view_active_projects():
                 employee_4 = 0
                 employee_5 = 0
                 employee_6 = 0
+                employee_7 = 0
 
             
                 # loop through the salaries distribution and allocate appropiately
@@ -228,11 +220,13 @@ def view_active_projects():
                         employee_5 = salaries_distribution[x]
                     elif x == 6:
                         employee_6 = salaries_distribution[x]
+                    elif x == 7:
+                        employee_7 = salaries_distribution[x]
                     else:
                         print("Employee records not yet updated in the database.")
 
                 # update salaries table in the database
-                update_salaries_table(option,project_user,director_1,director_2,employee_3,employee_4,employee_5,employee_6)
+                update_salaries_table(option,project_user,director_1,director_2,employee_3,employee_4,employee_5,employee_6,employee_7)
 
 def add_to_pesafunds():
     """This section controls how the company funds are distributed and used """

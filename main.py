@@ -1,13 +1,10 @@
+
+from database.database_select_from_tables import *
+from sub_programs import add_project_to_database, view_active_projects, formode_funds
+
 def main():
     """ engine of the programme"""
 
-    from database import view_salary
-    from database import view_projects
-    from database import alter_table
-
-    from parameters import time_id
-
-    from sub_programs import add_project_to_database, view_active_projects, formode_funds
 
     correct = True
     while correct:
@@ -51,7 +48,7 @@ def main():
             formode_funds()
         # settings
         elif user_selection == 6:
-            alter_table()
+            pass
         # Quit
         elif user_selection == 0:
             correct = False
