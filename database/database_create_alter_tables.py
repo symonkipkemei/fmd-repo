@@ -123,3 +123,4 @@ def drop_table():
     cursor.execute("""DROP TABLE formode_repository.salaries_funds1;""")
     print("dropped succesfully")
 
+ 
