@@ -1,6 +1,6 @@
 
 from database.database_select_from_tables import *
-from sub_programs import add_project_to_database, view_active_projects, formode_funds
+from sub_programs import *
 
 def main():
     """ engine of the programme"""
@@ -26,7 +26,7 @@ def main():
               "3) Completed projects\n"
               "4) Active projects\n"
               "5) Formode Fund\n"
-              "6) Settings\n"
+              "6) Net fund\n"
               "0) Quit")
         print("**************************************")
         user_selection = int(input("insert option: "))
@@ -48,7 +48,8 @@ def main():
             formode_funds()
         # settings
         elif user_selection == 6:
-            pass
+            net_funds()
+            
         # Quit
         elif user_selection == 0:
             correct = False

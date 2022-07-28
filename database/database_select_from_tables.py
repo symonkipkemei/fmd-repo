@@ -111,7 +111,43 @@ def view_salary():
         else:
             print("Guess you live in mars.There are 12 months here on Earth,try again.")
 
+# select from project details & salaries
 
+def project_bee_debit(project_bee):
+    """"Amount payable to the bee"""
+    total_amount = 0
+    # director table
+    if project_bee == "director_1":
+        cursor.execute("""SELECT project_details.date_completion,salaries_funds.director_1
+        FROM project_details,salaries_funds WHERE project_details.project_name = salaries_funds.project_name;""")
+    elif project_bee == "director_2":
+        cursor.execute("""SELECT project_details.date_completion,salaries_funds.director_2
+        FROM project_details,salaries_funds WHERE project_details.project_name = salaries_funds.project_name;""")
+    elif project_bee == "employee_3":
+        cursor.execute("""SELECT project_details.date_completion,salaries_funds.employee_3
+        FROM project_details,salaries_funds WHERE project_details.project_name = salaries_funds.project_name;""")
+    elif project_bee == "employee_4":
+        cursor.execute("""SELECT project_details.date_completion,salaries_funds.employee_4
+        FROM project_details,salaries_funds WHERE project_details.project_name = salaries_funds.project_name;""")
+    elif project_bee == "employee_5":
+        cursor.execute("""SELECT project_details.date_completion,salaries_funds.employee_5
+        FROM project_details,salaries_funds WHERE project_details.project_name = salaries_funds.project_name;""")
+    elif project_bee == "employee_6":
+        cursor.execute("""SELECT project_details.date_completion,salaries_funds.employee_6
+        FROM project_details,salaries_funds WHERE project_details.project_name = salaries_funds.project_name;""")
+    else:
+        print("Possibly there is a new employee, check the databse structure")
+
+    for row in cursor.fetchall():
+        date = row[0]
+        project_bee_debit = row[1]
+        total_amount += project_bee_debit
+
+    # convert to kenya shillings
+    total_amount = total_amount * 110
+
+    return total_amount
+    
 # select from  project_funds & project_details
 
 def view_projects():
@@ -260,6 +296,22 @@ def retrieve_project_quote(project_id):
     print(f"Formode Fee: {formode_fee}")
     print(f"Your Fee: {your_fee}")
     print(f"Timeline: {optical_timeline} days")
+
+def total_projects_company_income():
+    """"Total income of the company derived from projects"""
+    total_fund = 0
+    cursor.execute("""SELECT project_details.date_completion,project_funds.company_fund
+    FROM project_details,project_funds WHERE project_details.project_name = project_funds.project_name AND project_details.project_status = 'COMPLETE';""")
+
+    for row in cursor.fetchall():
+        date = row[0]
+        company_fund = row[1]
+        total_fund += company_fund
+
+    # translate into kenya shillings
+    total_fund = total_fund * 110
+
+    return total_fund
 
 # select from Project_details
 
@@ -548,3 +600,69 @@ def expenditure_breakdown():
     print("\n**********************************************")
     cumulative_total = total_salaries + total_running_cost + total_loans
     print(f"TOTAL EXPENDITURE :{cumulative_total}/=")
+
+def total_company_expenditure_running_cost():
+    """"Total expenditure of the company derived from pesa_funds running cost"""
+    total_running_cost = 0
+    cursor.execute("""SELECT pesa_funds.funds_date, pesa_funds.amount FROM pesa_funds WHERE pesa_funds.co_sub_type ='RUNNING_COST'; """)
+
+    for row in cursor.fetchall():
+        date = row[0]
+        running_cost = row[1]
+        total_running_cost += running_cost
+
+    return total_running_cost
+
+
+def total_company_expenditure_loans():
+    """"Total income of the company derived from projects"""
+    total_loans = 0
+    cursor.execute("""SELECT pesa_funds.funds_date, pesa_funds.amount FROM pesa_funds WHERE pesa_funds.co_sub_type ='LOANS'; """)
+
+    for row in cursor.fetchall():
+        date = row[0]
+        loans = row[1]
+        total_loans += loans
+
+    return total_loans
+
+
+def total_er_income():
+    """"Total income of the company derived from exchange rate"""
+    total_er_income= 0
+    cursor.execute("""SELECT pesa_funds.funds_date, pesa_funds.er_income FROM pesa_funds; """)
+
+    for row in cursor.fetchall():
+        date = row[0]
+        er_income = row[1]
+        total_er_income += er_income
+
+    return total_er_income
+
+def total_repayed_loans_income():
+    """"Total income of the company derived from repayed loans"""
+    repayed_loans= 0
+    cursor.execute("""SELECT pesa_funds.funds_date, pesa_funds.amount FROM pesa_funds WHERE pesa_funds.co_sub_type = 'R_LOANS'; """)
+
+    for row in cursor.fetchall():
+        date = row[0]
+        loans = row[1]
+        repayed_loans += loans
+
+    return repayed_loans
+
+
+
+def project_bee_credit(project_bee):
+    """ Amount released to the bee"""
+    total_amount = 0
+
+    cursor.execute("""SELECT pesa_funds.funds_date, pesa_funds.amount FROM pesa_funds WHERE pesa_funds.typology = ?;""",[project_bee])
+
+    for row in cursor.fetchall():
+        date = row[0]
+        project_bee_credit = row[1]
+        total_amount += project_bee_credit
+    return total_amount
+
+

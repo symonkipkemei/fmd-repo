@@ -345,3 +345,112 @@ def formode_funds():
             print("Wrong input, try again")
 
 
+def net_funds():
+    """displaying net funds"""
+    correct = True
+    while correct:
+        print("\n*******NET FUNDS**************")
+        print("1) Company Fund \n"
+              "2) Project Bees \n"
+              "0) Go back")
+        print("**********************************")
+        user_selection = int(input("insert option: "))
+
+        if user_selection == 1:
+            
+            # DEBITS
+            projects = total_projects_company_income()
+            er_income = total_er_income()
+            repayed_loans = total_repayed_loans_income()
+
+            # round the figures
+            projects = round(projects, 2)
+            er_income = round(er_income, 2)
+            repayed_loans = round(repayed_loans,2)
+
+            # sum the debits
+            debits = projects + er_income + repayed_loans
+            
+
+            # CREDITS
+            total_loans = total_company_expenditure_loans()
+            total_running_cost = total_company_expenditure_running_cost()
+
+            # round
+            total_loans = round(total_loans,2)
+            total_running_cost = round(total_running_cost,2)
+
+            # sum the credits
+            credits = total_loans + total_running_cost
+
+
+            # BALANCE
+            balance = debits - credits
+
+            # display information
+            print("\n*********NET COMPANY FUND********\n")
+            print("************DEBITS**************")
+            print(f"Total income- projects:{projects} /=")
+            print(f"Total income- er_income:{er_income} /=")
+            print(f"Total income- repayed loans:{repayed_loans} /=")
+            print("*********************************")
+            print(f"Total Debits :{debits} /=\n")
+
+
+            print("************CREDITS**************")
+            print(f"Total expenditure- running cost:{total_running_cost} /=")
+            print(f"Total expenditure- loans:{total_loans} /=")
+            print("*********************************")
+            print(f"Total Credits :{credits} /=\n")
+            
+            print("*********BALANCE**********")
+            print(f"Balance : {balance}/=")
+            
+        elif user_selection == 2:
+
+            # identify the project bee to query the debits/credits from
+
+            filename = "files/project_done_by.csv"
+            filetype = "project bee"
+            file_type_upper = str.upper(filetype)
+            project_user = project_setup(filename, filetype)
+
+            # credits
+            total_credit = project_bee_credit(project_user)
+
+            # debits
+
+            #cidentify the index of project user
+            with open(filename, "r") as f:
+                print(f"\n****{file_type_upper}*****")
+                iterable = csv.reader(f)
+                list_iterable = list(iterable)
+                for x in list_iterable:
+                    if x[1] == project_user:
+                        project_index = x[0]
+
+            # create the column id in the salaries_funds table
+            if project_user == "SYMON":
+                debit_user = "director_" + str(project_index)
+            elif project_user == "BRIAN":
+                debit_user = "director_" + str(project_index)
+            else:
+                debit_user = "employee_" + str(project_index)
+
+            total_debit = project_bee_debit(debit_user)
+
+            # balance
+            print(f"\n*********{project_user}********")
+            print(f"Total Debits :{total_debit} /=")
+            print(f"Total Credits :{total_credit} /=")
+            print("*********************************")
+            balance = f"{(total_debit) - (total_credit)}/="
+            print(balance)
+
+
+        elif user_selection == 0:
+            correct = False
+            print("""Consistency is a key element, without which a leader is incapable of getting respect, 
+            success or even developing confidence in others.\nThank you!""")
+        else:
+            print("Wrong input, try again")
