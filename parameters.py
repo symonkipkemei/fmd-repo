@@ -72,8 +72,6 @@ def project_setup(filename, filetype):
 
             file_type_upper = str.upper(filetype)
 
-
-
             try_again = True
             while try_again:
                 category_dict = {}
