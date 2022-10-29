@@ -1,4 +1,6 @@
 
+import csv
+
 def project_name(date, clientName, category):
     """establish the name of the project, should be used as primary key"""
     # date converted to string
@@ -29,7 +31,6 @@ def client_name():
             correct = False
 
     return name
-
 
 
 # Date algorithim
@@ -63,210 +64,16 @@ def date_setup(purpose):
     
     return current_date
 
-if __name__ == "__main__":
-    date = date_setup()
-    print(date)
 
-
-#
-
-## imported algos
-
-
-# record the client name
-
-
-
-def project_setup(filename, filetype):
-    """establish project source"""
-    restart = True
-    while restart :
-        try:
-            global purpose
-            import csv
-            from configurations import project_configuration
-
-            # announce what we are doing here
-
-            file_type_upper = str.upper(filetype)
-
-            try_again = True
-            while try_again:
-                category_dict = {}
-                with open(filename, "r") as f:
-                    print(f"\n****{file_type_upper}*****")
-                    iterable = csv.reader(f)
-                    list_iterable = list(iterable)
-                    for x in list_iterable:
-                        print(f"{x[0]}. {x[1]}")
-                        category_dict[int(x[0])] = x[1]
-                    print("0. (modify list)")
-                user_selection = int(input("Insert option above: "))
-
-                for x in category_dict:
-                    if user_selection == x:
-                        purpose = category_dict[x]
-                        try_again = False
-                        return purpose
-                if user_selection == 0:
-                    project_configuration(filename, filetype)
-
-                restart = False
-
-        except FileNotFoundError:
-            f = open(filename, "w")
-            f.close()
-            restart = True
-
-
-
-def project_setup_cooperation(filename, filetype):
-    """establish project source"""
-    selected_bees = []
-    bees_index = []
-    global user_selection
-    import csv
-            
-
-    # announce what we are doing here
-
-    file_type_upper = str.upper(filetype)
-
-    # loop until all the bees have been mentioned.
-
-    try_again = True
-    while try_again:
-        category_dict = {}
-        # all bees displayed from csv file
-        with open(filename, "r") as f:
-            # display  bees available
-            print("\n*******AVAILABLE BEES*******")
-            iterable = csv.reader(f)
-            list_iterable = list(iterable)
-            for x in list_iterable:
-                print(f"{x[0]}. {x[1]}")
-                category_dict[int(x[0])] = x[1]
-            # option to terminate the loop
-            print("0. (stop the count)")
-            print("****************************\n")
-
-        # bee selection
-        user_selection = int(input("Insert option above: "))
-                
-
-            #check if bee selected is within the list
-
-        for x in category_dict:
-            if user_selection == x:
-                purpose = category_dict[x]
-                # if selected bee in list, announce the selected one (within a list)
-                
-                selected_bees.append (category_dict[x])
-                print (f"\nselected bee: {selected_bees} ")
-                
-                # store the index ( identifier of the bees ) in a different list
-                bees_index.append (x)
-                print("\n*******ADD ANOTHER BEE******")
-                
-        
-                
-        if user_selection == 0:
-            print("Bees selected")
-            try_again = False
-            
-
-    print(bees_index)
-
-    return bees_index
-    
-
-def project_funds():
+## project fund algos
+def project_fund():
     """Total amount paid for the project"""
     print("\n****PROJECT FUND*****")
     projectFund = float(input("Amount paid:"))
     return projectFund
 
 
-def project_funds_distribution(projectSource, doneBy, projectFund):
-    """The total amount payable for the particular project as per the guy working on it"""
-    company_fund = 0
-    brian_income = 0
-    symon_income = 0
-    other_income = 0
-    tax = 0
-
-    # estbalish what is to be shared after , fiverr's cut
-
-    if projectSource == "FIVERR":
-        shareable_fund = (projectFund / 100) * 80
-        tax = (projectFund / 100) * 20
-    else:
-        shareable_fund = projectFund
-
-    if doneBy == "BRIAN":
-        company_fund = (shareable_fund / 100) * 50
-        brian_income = shareable_fund - company_fund
-    elif doneBy == "SYMON":
-        company_fund = (shareable_fund / 100) * 50
-        symon_income = shareable_fund - company_fund
-
-    elif doneBy == "SYMON-BRIAN":
-        company_fund = (shareable_fund / 100) * 50
-        sharable_income = (shareable_fund / 100) * 50
-        print("\n*****SHAREABLE_FORMULA *****\n"
-              "Symon(s):Brian(B)\n"
-              "1)50%S : 50%B \n"
-              "2)15%S : 85B% \n"
-              "3)85%S : 15B% \n"
-              "4)80%S : 20B% \n"
-              "5)20%S : 80%B ")
-        shareable_formula = int(input("insert formula:"))
-
-        if shareable_formula == 1:
-            symon_income = sharable_income / 2
-            brian_income = sharable_income / 2
-
-        elif shareable_formula == 2:
-            symon_income = (sharable_income / 100) * 15
-            brian_income = (sharable_income / 100) * 85
-
-        elif shareable_formula == 3:
-            symon_income = (sharable_income / 100) * 85
-            brian_income = (sharable_income / 100) * 15
-
-        elif shareable_formula == 4:
-            symon_income = (sharable_income / 100) * 80
-            brian_income = (sharable_income / 100) * 20
-
-        elif shareable_formula == 5:
-            symon_income = (sharable_income / 100) * 20
-            brian_income = (sharable_income / 100) * 80
-    elif doneBy == "SYMON-EMPLOYEE":
-        company_fund = (shareable_fund / 100) * 50
-        sharable_income = (shareable_fund / 100) * 50
-        other_income = int(input("insert employee income:"))
-        symon_income = sharable_income - other_income
-        print(f"symon income is {symon_income}")
-
-    elif doneBy == "BRIAN-EMPLOYEE":
-        company_fund = (shareable_fund / 100) * 50
-        sharable_income = (shareable_fund / 100) * 50
-        other_income = int(input("insert employee income:"))
-        brian_income = sharable_income - other_income
-        print(f"Brian income is {brian_income}")
-
-    elif doneBy == "EMPLOYEE":
-        company_fund = (shareable_fund / 100) * 10
-        other_income = (shareable_fund / 100) * 90
-
-    print(other_income)
-
-    funds = (company_fund, brian_income, symon_income, other_income, tax)
-    return funds
-
-
-def project_funds_distribution_V2(projectSource, projectFund):
-
+def project_funds_distribution_V2(project_source_id, project_fund):
     # client_fee (is the projectFund aggreed between the sellar and buyer)
     # real_fee ( fee visible to the world)
     # optical_fee (fee visible only by directors) 
@@ -281,15 +88,14 @@ def project_funds_distribution_V2(projectSource, projectFund):
     # brian_income ( director 2)
     # other_income  (employee)
 
-    if projectSource == "FIVERR":
-        client_fee = projectFund
+    if project_source_id == 1:
+        client_fee = project_fund
         distribution_factor = (2/3) # distribution to reality
         real_fee = distribution_factor * client_fee
         
         # real_fee should always be a whole number rounded to 0 or 5 to make it convincing
         base = 5
         real_fee = base * round(real_fee /5)
-
 
         # optical illusion achieved
         optical_fee = client_fee - real_fee
@@ -305,12 +111,15 @@ def project_funds_distribution_V2(projectSource, projectFund):
         salaries = project_bee_salary
         tax = fiverr_tax_o + fiverr_tax_r
 
-        funds = (company_fund, salaries, tax)
+        # consultancies
+        consultancies = 0
+
+        funds = (company_fund,consultancies, salaries, tax)
         
         return funds
 
-    elif projectSource == "PHYSICAL":
-        client_fee = projectFund
+    elif project_source_id == 2:
+        client_fee = project_fund
         distribution_factor = (2/3) # distribution to reality
         real_fee = distribution_factor * client_fee
         
@@ -338,99 +147,108 @@ def project_funds_distribution_V2(projectSource, projectFund):
         salaries = project_bee_salary
         tax = physical_tax_o + physical_tax_r
 
-        funds = (company_fund, salaries, tax)
+        # consultancies
+        consultancies = 0
+
+        funds = (company_fund, consultancies, salaries, tax)
 
         return funds
     
     else:
-        print("Other projects yet to be included")
-
-
-
-def test():
-    real_fee = int(input("insert a number: "))
-    base = 5
-    real_fee = base * round(real_fee /5)
-    print(real_fee)
-
-
-
-def project_name(date, clientName, category):
-    """establish the name of the project, should be used as primary key"""
-    # date converted to string
-    date_object = str(date)
-    # date string abstracted to the 2 digits of the year,month and day
-    record_date = date_object[2:4] + date_object[5:7] + date_object[8:10]
-    prjt_name = record_date + "_" + str(clientName) + "_" + str(category)
-    return prjt_name
-
-
-def salaries_matrix(filename, salary, bees_index):
-
-    """Picks up the salaries fund and sub divides among the bees"""
-    import csv
-    # store keys to the bees
-    category_dict = {}
-
-    # store amount allocated to each bee
-    pesa_dict = {}
-
-
-    # determine the bees from the index
-    with open(filename, "r") as f:
-            iterable = csv.reader(f)
-            list_iterable = list(iterable)
-            for x in list_iterable:
-                category_dict[int(x[0])] = x[1]
-
-    print(f"TOTAL SALARIES FUND:{salary}")
-    count = 0
-
-    # loop through the bees-index
-    for x in bees_index:
-        # determine the keys in dictionary
-        for y in category_dict:
-            #if key in dict is similar to item in bees-index, then you've found the right person
-            if x == y:
-                # loop to control greed/inappropiate allocation
-                try_again = True
-                while try_again == True:
-                    amount_earned = float(input(f"{category_dict[y]} SHARE : "))
-                    rem = (float(salary)) - amount_earned
-                    count += rem
-                    if  count <= 0:
-                        print("Don't be greedy, share the funds appropiately. Try again")
-                    else:
-                        print (f"Unallocated amount is {rem}")
-                        # record the amount allocated to the individual to the dictionary
-                        pesa_dict [x] = amount_earned
-                        try_again = False
-
-    print(pesa_dict)
-    return pesa_dict
-
-#filename1 = "files/project_done_by.csv"
-#salary = 600
-#bees = [2,3,4,1]
-#salaries_matrix(filename1 ,salary, bees)
-
+        print("ther projects yet to be included")
 
 
 def dollars_ksh():
-                # establish amount of dollars withdrawn
-                dollars_withdrawn = float(input("insert amount withdrawn (dollars):"))
-                amount_recieved = float(input("insert amount recieved (ksh):"))
+    # establish amount of dollars withdrawn
+    dollars_withdrawn = float(input("insert amount withdrawn (dollars):"))
+    amount_recieved = float(input("insert amount recieved (ksh):"))
 
-                # establish an exchange rate fee a constant used for the project
-                #anything above this becomes company's profit
+    # establish an exchange rate fee a constant used for the project
+    #anything above this becomes company's profit
 
-                rate = 110
+    rate = 110
 
-                # establish project amount ()
-                project_amount = dollars_withdrawn * rate
-                er_income = amount_recieved - project_amount
+    # establish project amount ()
+    project_amount = dollars_withdrawn * rate
+    er_income = amount_recieved - project_amount
 
-                money = (project_amount, er_income)
+    money = (project_amount, er_income)
 
-                return money
+    return money
 
+
+def salaries_matrix(filename, salary, bees_no):
+     """Picks up the salaries fund and sub divides among the bees"""
+     # store keys to the bees
+     category_dict = {}
+     # store amount allocated to each bee
+     pesa_dict = {}
+
+
+     # determine the bees from the index
+     with open(filename, "r") as f:
+             iterable = csv.reader(f)
+             list_iterable = list(iterable)
+             for x in list_iterable:
+                 category_dict[int(x[0])] = x[1]
+
+     print(f"TOTAL SALARIES FUND:{salary}")
+     count = 0
+
+     # loop through the bees-index
+     for x in bees_no:
+         # determine the keys in dictionary
+         for y in category_dict:
+             #if key in dict is similar to item in bees-index, then you've found the right person
+             if x == y:
+                 # loop to control greed/inappropiate allocation
+                 try_again = True
+                 while try_again == True:
+                     amount_earned = float(input(f"{category_dict[y]} SHARE : "))
+                     rem = (float(salary)) - amount_earned
+                     count += rem
+                     if  count <= 0:
+                         print("Don't be greedy, share the funds appropiately. Try again")
+                     else:
+                         print (f"Unallocated amount is {rem}")
+                         # record the amount allocated to the individual to the dictionary
+                         pesa_dict [x] = amount_earned
+                         try_again = False
+
+     print(pesa_dict)
+     return pesa_dict
+
+
+
+#bees algos
+
+def gender_type():
+    gender_dict= {1:"MALE",2:"FEMALE"}
+
+    print("Choose one of the gender options")
+    for key, value in gender_dict.items():
+        print(f"{key}: {value}")
+
+    user_input = int(input("choose:"))
+
+    return gender_dict[user_input]
+
+
+
+
+#pay algos
+
+def salaries_matrix(salary, bees_no_dict: dict):
+    """Picks up the salaries fund and sub divides among the bees"""
+    # loop to control greed/inappropiate allocation
+    salary_app = {}
+
+    for key, value in bees_no_dict.items():
+        amount_earned = float(input(f"{key}:{value} SHARE : "))
+        amount_remaining = (float(salary)) - amount_earned
+        print(f"AMOUNT REMAINING {amount_remaining}")
+
+        salary_app=[key]=amount_earned
+
+        salary = amount_remaining
+    return salary_app

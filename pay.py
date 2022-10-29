@@ -4,96 +4,75 @@ from connect import engine
 from connect import connection
 from connect import metadata
 
+import project as project
+import bees as bees
+import project_fund as project_fund
+
 import algos
 
-import project_category as project_category 
-import project_source as project_source
-import project_status as project_status
-import scope as scope
-
 # create table object, called selected table, st
-st = s.Table("project", metadata, autoload=True, autoload_with=engine) #account_currency
-
+st = s.Table("pay", metadata, autoload=True, autoload_with=engine) #project_source
+pb = s.Table("project_bees", metadata, autoload=True, autoload_with=engine) #fund bees
+pf = s.Table("project_fund", metadata, autoload=True, autoload_with=engine) #project fund
+p = s.Table("project", metadata, autoload=True, autoload_with=engine) #project
+b = s.Table("bees", metadata, autoload=True, autoload_with=engine) #project
 
 # the functions that are imported into the display table and view table, adapt/change this when updating a table.
 #________________________________________________________________________________________________________________________
 def select_table():
-    # the query object
-    query = s.select([st.columns.project_id, st.columns.project_name])
+    join_statement = st.join(pb,pb.columns.fund_bees_id==st.columns.fund_bees_id).join(pf,pf.columns.project_fund_id==pb.columns.project_fund_id).join(p,p.columns.project_id==pf.columns.project_id)
+
+    # select project_id,project_name and the salary fund
+    query = s.select([p.columns.project_id, p.columns.project_name,pf.columns.salaries]).select_from(join_statement)
     # execute query
     select_result_proxy = connection.execute(query)
+
+    
     return select_result_proxy
 
 def update_table():
-    PROJECT_ID = int(input("Select project id: "))
-    CLIENT_NAME = algos.client_name()
-    DATE_COMMENCMENT = algos.date_setup("date of commencment")
-    PROJECT_CATEGORY_ID = project_category.show_table()
-    PROJECT_NAME = algos.project_name()
-    PROJECT_SOURCE_ID = project_source.show_table()
-    PROJECT_SCOPE_ID = 0
-    PROJECT_STATUS_ID = project_status.show_table()
-    DATE_COMPLETION = algos.date_setup("date of completion")
-   
-    update = s.update(st).values(
-        client_name=CLIENT_NAME,
-        date_commencment=DATE_COMMENCMENT,
-        project_name=PROJECT_NAME,
-        project_category_id=PROJECT_CATEGORY_ID,
-        project_source_id=PROJECT_SOURCE_ID,
-        project_scope_id=PROJECT_SCOPE_ID,
-        project_status_id=PROJECT_STATUS_ID,
-        date_completion=DATE_COMPLETION
-        ).where(st.columns.project_id == PROJECT_ID)
+    fund_bees_id = int(input("Select fund_bees id: "))
+    project_fund_id = input("Insert project fund_id: ")
+    bee_no = input("Insert bee no: ")
+
+    update = s.update(st).values(project_fund_id= project_fund_id,bee_no=bee_no).where(st.columns.fund_bees_id == fund_bees_id)
     proxy = connection.execute(update)
     ans = "selected id updated"
     return ans
 
 def delete_table():
-    id_selection = int(input("Select project id: "))
-    query = s.delete(st).where(st.columns.project_id == id_selection)
+    fund_bees_id = int(input("Select fund_bees_id: "))
+    query = s.delete(st).where(st.columns.fund_bees_id == fund_bees_id)
     proxy = connection.execute(query)
     ans = "selected id deleted"
     return ans
 
-def insert_table(CLIENT_NAME,DATE_COMMENCMENT,PROJECT_CATEGORY_ID,PROJECT_NAME,PROJECT_SOURCE_ID,PROJECT_STATUS_ID,PROJECT_FUND_ID,date_completion = True):
-    if date_completion is True:
-        DATE_COMPLETION = algos.date_setup("date of completion")
+def insert_table(project_id,salary):
+    salary = float(salary)
+    list_details =[]
+    #select bees who did the project as well as their names
+    join_statement = st.join(pb,pb.columns.project_bees_id ==st.columns.project_bees_id)#.join(b,b.columns.bee_no == pb.columns.bee_no)
+    query = s.select([pb.columns.project_bees_id,pb.columns.bee_no]).where(pb.columns.project_id == project_id)#.select_from(join_statement)#
+    select_result_proxy = connection.execute(query)
 
-        insert = s.insert(st).values(
-            client_name=CLIENT_NAME,
-            date_commencment=DATE_COMMENCMENT,
-            project_name=PROJECT_NAME,
-            project_category_id=PROJECT_CATEGORY_ID,
-            project_source_id=PROJECT_SOURCE_ID,
-            project_status_id=PROJECT_STATUS_ID,
-            project_fund_id=PROJECT_FUND_ID,
-            date_completion=DATE_COMPLETION
-            )
+    for result in select_result_proxy:
+        print(result)
+        project_bees_id = result[0]
+        bee_no = result[1]
+        #last_name= result[2]
+        item = [project_bees_id,bee_no]
+        list_details.append(item)
+ 
+        
+    for list_item in list_details:
+        bee_name = bees.show_bee_name(list_item[1])
+        amount_earned = float(input(f"{str.upper(bee_name)} SHARE : "))
 
-        proxy = connection.execute(insert)
-        ans = f"{PROJECT_NAME} inserted"
-    else:
-        insert = s.insert(st).values(
-            client_name=CLIENT_NAME,
-            date_commencment=DATE_COMMENCMENT,
-            project_name=PROJECT_NAME,
-            project_category_id=PROJECT_CATEGORY_ID,
-            project_source_id=PROJECT_SOURCE_ID,
-            project_status_id=PROJECT_STATUS_ID,
-            project_fund_id=PROJECT_FUND_ID,
-            )
-
-        proxy = connection.execute(insert)
-        ans = f"{PROJECT_NAME} inserted"
-
-
-
-
-
-    
-
-    
+        insert_fund_bees = s.insert(st).values(project_bees_id=list_item[0],pay_amount=amount_earned)
+        proxy = connection.execute(insert_fund_bees)
+        rem = salary - amount_earned
+        salary = rem
+        print(f"REMAINING SALARY : {rem}")
 
 
 # the functions can be imported into another table
@@ -261,20 +240,8 @@ def show_table(table_name):
     return user_selection
 
 
-def  retrieve_project_id():
-    # retrieve the id of the project just inserted
-     # the query object
-    query = s.select([st.columns.project_id, st.columns.project_name]).order_by(s.desc(st.columns.project_id)).limit(1)
-    # execute query
-    select_result_proxy = connection.execute(query)
-
-    for result in select_result_proxy:
-        project_id = result[0]
-
-    print(project_id)
-
-    return project_id
-    
 
 if __name__ == "__main__":
-    display_table("project")
+    project_id = 28
+    salaries = 374
+    insert_table(project_id,salaries)

@@ -4,96 +4,56 @@ from connect import engine
 from connect import connection
 from connect import metadata
 
+
 import algos
 
-import project_category as project_category 
-import project_source as project_source
-import project_status as project_status
-import scope as scope
-
 # create table object, called selected table, st
-st = s.Table("project", metadata, autoload=True, autoload_with=engine) #account_currency
+st = s.Table("project_fund", metadata, autoload=True, autoload_with=engine) #project_fund
+p = s.Table("project", metadata, autoload=True, autoload_with=engine) #project_fund
 
 
 # the functions that are imported into the display table and view table, adapt/change this when updating a table.
 #________________________________________________________________________________________________________________________
 def select_table():
     # the query object
-    query = s.select([st.columns.project_id, st.columns.project_name])
+    query = s.select([st.columns.project_fund_id, st.columns.project_fund,st.columns.company_fund,st.columns.consultancies_fund,st.columns.salaries,st.columns.tax])
     # execute query
     select_result_proxy = connection.execute(query)
     return select_result_proxy
 
-def update_table():
-    PROJECT_ID = int(input("Select project id: "))
-    CLIENT_NAME = algos.client_name()
-    DATE_COMMENCMENT = algos.date_setup("date of commencment")
-    PROJECT_CATEGORY_ID = project_category.show_table()
-    PROJECT_NAME = algos.project_name()
-    PROJECT_SOURCE_ID = project_source.show_table()
-    PROJECT_SCOPE_ID = 0
-    PROJECT_STATUS_ID = project_status.show_table()
-    DATE_COMPLETION = algos.date_setup("date of completion")
-   
-    update = s.update(st).values(
-        client_name=CLIENT_NAME,
-        date_commencment=DATE_COMMENCMENT,
-        project_name=PROJECT_NAME,
-        project_category_id=PROJECT_CATEGORY_ID,
-        project_source_id=PROJECT_SOURCE_ID,
-        project_scope_id=PROJECT_SCOPE_ID,
-        project_status_id=PROJECT_STATUS_ID,
-        date_completion=DATE_COMPLETION
-        ).where(st.columns.project_id == PROJECT_ID)
+def update_table(project_source_id,project_fund_id):
+    project_fund = algos.project_fund()
+    company_fund,consultancies_fund,salaries,tax = algos.project_funds_distribution_V2(project_source_id,project_fund)
+    update = s.update(st).values(project_fund=project_fund,company_fund=company_fund,consultancies_fund=consultancies_fund,salaries=salaries,tax=tax).where(st.columns.project_fund_id == project_fund_id)
     proxy = connection.execute(update)
     ans = "selected id updated"
     return ans
 
 def delete_table():
-    id_selection = int(input("Select project id: "))
-    query = s.delete(st).where(st.columns.project_id == id_selection)
+    project_fund_id = int(input("Select project source id: "))
+    query = s.delete(st).where(st.columns.project_fund_id == project_fund_id)
     proxy = connection.execute(query)
     ans = "selected id deleted"
     return ans
 
-def insert_table(CLIENT_NAME,DATE_COMMENCMENT,PROJECT_CATEGORY_ID,PROJECT_NAME,PROJECT_SOURCE_ID,PROJECT_STATUS_ID,PROJECT_FUND_ID,date_completion = True):
-    if date_completion is True:
-        DATE_COMPLETION = algos.date_setup("date of completion")
+def insert_table(project_source_id):
+    project_fund = algos.project_fund()
+    company_fund,consultancies_fund,salaries,tax = algos.project_funds_distribution_V2(project_source_id,project_fund)
+    insert = s.insert(st).values(project_fund=project_fund,company_fund=company_fund,consultancies_fund=consultancies_fund,salaries_fund=salaries,tax=tax)
+    proxy = connection.execute(insert)
+    ans = f"{project_fund} inserted"
 
-        insert = s.insert(st).values(
-            client_name=CLIENT_NAME,
-            date_commencment=DATE_COMMENCMENT,
-            project_name=PROJECT_NAME,
-            project_category_id=PROJECT_CATEGORY_ID,
-            project_source_id=PROJECT_SOURCE_ID,
-            project_status_id=PROJECT_STATUS_ID,
-            project_fund_id=PROJECT_FUND_ID,
-            date_completion=DATE_COMPLETION
-            )
+    #retrieve project_fund id of the above transaction so that It can be saved in the project table,
 
-        proxy = connection.execute(insert)
-        ans = f"{PROJECT_NAME} inserted"
-    else:
-        insert = s.insert(st).values(
-            client_name=CLIENT_NAME,
-            date_commencment=DATE_COMMENCMENT,
-            project_name=PROJECT_NAME,
-            project_category_id=PROJECT_CATEGORY_ID,
-            project_source_id=PROJECT_SOURCE_ID,
-            project_status_id=PROJECT_STATUS_ID,
-            project_fund_id=PROJECT_FUND_ID,
-            )
+    query = s.select([st.columns.project_fund_id]).order_by(s.desc(st.columns.project_fund_id)).limit(1)
+    select_result_proxy = connection.execute(query)
 
-        proxy = connection.execute(insert)
-        ans = f"{PROJECT_NAME} inserted"
+    for result in select_result_proxy:
+        project_fund_id = result[0]
+
+    return project_fund_id
 
 
-
-
-
-    
-
-    
 
 
 # the functions can be imported into another table
@@ -261,20 +221,36 @@ def show_table(table_name):
     return user_selection
 
 
-def  retrieve_project_id():
+
+def retrieve_project_fund_id():
     # retrieve the id of the project just inserted
      # the query object
-    query = s.select([st.columns.project_id, st.columns.project_name]).order_by(s.desc(st.columns.project_id)).limit(1)
+    query = s.select([st.columns.project_fund_id]).order_by(s.desc(st.columns.project_fund_id)).limit(1)
     # execute query
     select_result_proxy = connection.execute(query)
 
     for result in select_result_proxy:
-        project_id = result[0]
+        project_fund_id = result[0]
 
-    print(project_id)
+    print(project_fund_id)
 
-    return project_id
-    
+    return project_fund_id
+
+
+def select_salaries(project_id):
+    # retrieve the id of the project just inserted
+    # the query object
+    join_statement = st.join(p,p.columns.project_fund_id == st.columns.project_fund_id)
+    query = s.select([st.columns.salaries_fund]).select_from(join_statement).where(p.columns.project_id == project_id)
+    # execute query
+    select_result_proxy = connection.execute(query)
+
+    for result in select_result_proxy:
+        salaries = result[0]
+
+    print(f"SALARIES FUND TO BE DISTRIBUTED: {salaries}")
+    return salaries
+
 
 if __name__ == "__main__":
-    display_table("project")
+    display_table("project_source")

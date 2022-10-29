@@ -348,49 +348,7 @@ def project_name(date, clientName, category):
     return prjt_name
 
 
-def salaries_matrix(filename, salary, bees_index):
 
-    """Picks up the salaries fund and sub divides among the bees"""
-    import csv
-    # store keys to the bees
-    category_dict = {}
-
-    # store amount allocated to each bee
-    pesa_dict = {}
-
-
-    # determine the bees from the index
-    with open(filename, "r") as f:
-            iterable = csv.reader(f)
-            list_iterable = list(iterable)
-            for x in list_iterable:
-                category_dict[int(x[0])] = x[1]
-
-    print(f"TOTAL SALARIES FUND:{salary}")
-    count = 0
-
-    # loop through the bees-index
-    for x in bees_index:
-        # determine the keys in dictionary
-        for y in category_dict:
-            #if key in dict is similar to item in bees-index, then you've found the right person
-            if x == y:
-                # loop to control greed/inappropiate allocation
-                try_again = True
-                while try_again == True:
-                    amount_earned = float(input(f"{category_dict[y]} SHARE : "))
-                    rem = (float(salary)) - amount_earned
-                    count += rem
-                    if  count <= 0:
-                        print("Don't be greedy, share the funds appropiately. Try again")
-                    else:
-                        print (f"Unallocated amount is {rem}")
-                        # record the amount allocated to the individual to the dictionary
-                        pesa_dict [x] = amount_earned
-                        try_again = False
-
-    print(pesa_dict)
-    return pesa_dict
 
 #filename1 = "files/project_done_by.csv"
 #salary = 600

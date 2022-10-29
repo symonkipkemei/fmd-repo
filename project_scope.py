@@ -4,8 +4,8 @@ from connect import engine
 from connect import connection
 from connect import metadata
 
-import project
-import scope
+import project as project
+import scope as scope
 # create table object, called selected table, st
 st = s.Table("project_scope", metadata, autoload=True, autoload_with=engine) #project_source
 
