@@ -66,7 +66,7 @@ def project_setup(filename, filetype):
         try:
             global purpose
             import csv
-            from configurations import project_configuration
+            from tables.configurations import project_configuration
 
             # announce what we are doing here
 

@@ -4,15 +4,15 @@ from connect import engine
 from connect import connection
 from connect import metadata
 
-import project as project
+import tables.project as project
 import bees as bees
-import project_fund as project_fund
+import tables.project_fund as project_fund
 
 import algos
 
 # create table object, called selected table, st
 st = s.Table("pay", metadata, autoload=True, autoload_with=engine) #project_source
-pb = s.Table("project_bees", metadata, autoload=True, autoload_with=engine) #fund bees
+pb = s.Table("project_bees", metadata, autoload=True, autoload_with=engine) #project_bees
 pf = s.Table("project_fund", metadata, autoload=True, autoload_with=engine) #project fund
 p = s.Table("project", metadata, autoload=True, autoload_with=engine) #project
 b = s.Table("bees", metadata, autoload=True, autoload_with=engine) #project
@@ -50,7 +50,7 @@ def delete_table():
 def insert_table(project_id,salary):
     salary = float(salary)
     list_details =[]
-    #select bees who did the project as well as their names
+    #select bees who did this particular project
     join_statement = st.join(pb,pb.columns.project_bees_id ==st.columns.project_bees_id)#.join(b,b.columns.bee_no == pb.columns.bee_no)
     query = s.select([pb.columns.project_bees_id,pb.columns.bee_no]).where(pb.columns.project_id == project_id)#.select_from(join_statement)#
     select_result_proxy = connection.execute(query)

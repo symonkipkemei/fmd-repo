@@ -1,6 +1,5 @@
 
-from database.database_select_from_tables import *
-from sub_programs import *
+import sub_programs as sp
 
 def main():
     """ engine of the programme"""
@@ -32,32 +31,32 @@ def main():
         user_selection = int(input("insert option: "))
 
         if user_selection == 1:
-            add_project_to_database()
-
+            sp.add_project_to_database()
         # check earnings
         elif user_selection == 2:
-            view_salary()
+           print("In progress")
         # view complete projects
         elif user_selection == 3:
-            view_projects()
+            print("In progress")
         # view active projects
         elif user_selection == 4:
-            view_active_projects()
+            print("In progress")
         # formode fund
         elif user_selection == 5:
-            formode_funds()
+            print("In progress")
         # settings
         elif user_selection == 6:
-            net_funds()
+            print("In progress")
             
         # Quit
         elif user_selection == 0:
             correct = False
-            print("""Unless the Lord builds the house,
-    those who build it labor in vain.\nThank you!""")
-
+            print("""Unless the Lord builds the house,those who build it labor in vain.\nThank you!""")
         else:
             print("Wrong input, try again")
 
 
-main()
+
+if __name__ == "__main__":
+    main()
+

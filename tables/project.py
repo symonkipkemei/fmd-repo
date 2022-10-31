@@ -1,62 +1,101 @@
 #connection
-import re
 import sqlalchemy as s
 from connect import engine
 from connect import connection
 from connect import metadata
 
-import project
-import scope
-
 import algos
+
+import tables.project_category as project_category 
+import tables.project_source as project_source
+import tables.project_status as project_status
+import tables.scope as scope
+
 # create table object, called selected table, st
-st = s.Table("bees", metadata, autoload=True, autoload_with=engine) #bees
+st = s.Table("project", metadata, autoload=True, autoload_with=engine) #project
+ps = s.Table("project_status", metadata, autoload=True, autoload_with=engine) #project status
 
 
 # the functions that are imported into the display table and view table, adapt/change this when updating a table.
 #________________________________________________________________________________________________________________________
 def select_table():
     # the query object
-    query = s.select([st.columns.bee_no, st.columns.last_name])
+    query = s.select([st.columns.project_id, st.columns.project_name])
     # execute query
     select_result_proxy = connection.execute(query)
     return select_result_proxy
 
 def update_table():
-    bee_no = int(input("select scope id: "))
-    first_name = input("Insert first name: ")
-    last_name = input("Insert last name: ")
-    email = input("Insert email: ")
-    phone_no = input("Insert phone_no: ")
-    gender = algos.gender_type()
-    hire_date = algos.date_setup("hire date")
-    birth_date = algos.date_setup("birth date")
-
-    update = s.update(st).values(first_name= first_name,last_name=last_name,email=email,phone_no=phone_no,gender=gender,hire_date=hire_date,birth_date=birth_date).where(st.columns.bee_no == bee_no)
+    PROJECT_ID = int(input("Select project id: "))
+    CLIENT_NAME = algos.client_name()
+    DATE_COMMENCMENT = algos.date_setup("date of commencment")
+    PROJECT_CATEGORY_ID = project_category.show_table()
+    PROJECT_NAME = algos.project_name()
+    PROJECT_SOURCE_ID = project_source.show_table()
+    PROJECT_SCOPE_ID = 0
+    PROJECT_STATUS_ID = project_status.show_table()
+    DATE_COMPLETION = algos.date_setup("date of completion")
+   
+    update = s.update(st).values(
+        client_name=CLIENT_NAME,
+        date_commencment=DATE_COMMENCMENT,
+        project_name=PROJECT_NAME,
+        project_category_id=PROJECT_CATEGORY_ID,
+        project_source_id=PROJECT_SOURCE_ID,
+        project_scope_id=PROJECT_SCOPE_ID,
+        project_status_id=PROJECT_STATUS_ID,
+        date_completion=DATE_COMPLETION
+        ).where(st.columns.project_id == PROJECT_ID)
     proxy = connection.execute(update)
     ans = "selected id updated"
     return ans
 
 def delete_table():
-    bee_no = int(input("Select scope id: "))
-    query = s.delete(st).where(st.columns.bee_no == bee_no)
+    id_selection = int(input("Select project id: "))
+    query = s.delete(st).where(st.columns.project_id == id_selection)
     proxy = connection.execute(query)
     ans = "selected id deleted"
     return ans
 
-def insert_table():
-    first_name = input("Insert first name: ")
-    last_name = input("Insert last name: ")
-    email = input("Insert email: ")
-    phone_no = input("Insert phone_no: ")
-    gender = algos.gender_type()
-    hire_date = algos.date_setup("hire date")
-    birth_date = algos.date_setup("birth date")
+def insert_table(CLIENT_NAME,DATE_COMMENCMENT,PROJECT_CATEGORY_ID,PROJECT_NAME,PROJECT_SOURCE_ID,PROJECT_STATUS_ID,PROJECT_FUND_ID,date_completion = True):
+    if date_completion is True:
+        DATE_COMPLETION = algos.date_setup("date of completion")
 
-    insert = s.insert(st).values(first_name= first_name,last_name=last_name,email=email,phone_no=phone_no,gender=gender,hire_date=hire_date,birth_date=birth_date)
-    proxy = connection.execute(insert)
-    ans = "selected id updated"
-   
+        insert = s.insert(st).values(
+            client_name=CLIENT_NAME,
+            date_commencment=DATE_COMMENCMENT,
+            project_name=PROJECT_NAME,
+            project_category_id=PROJECT_CATEGORY_ID,
+            project_source_id=PROJECT_SOURCE_ID,
+            project_status_id=PROJECT_STATUS_ID,
+            project_fund_id=PROJECT_FUND_ID,
+            date_completion=DATE_COMPLETION
+            )
+
+        proxy = connection.execute(insert)
+        ans = f"{PROJECT_NAME} inserted"
+    else:
+        insert = s.insert(st).values(
+            client_name=CLIENT_NAME,
+            date_commencment=DATE_COMMENCMENT,
+            project_name=PROJECT_NAME,
+            project_category_id=PROJECT_CATEGORY_ID,
+            project_source_id=PROJECT_SOURCE_ID,
+            project_status_id=PROJECT_STATUS_ID,
+            project_fund_id=PROJECT_FUND_ID,
+            )
+
+        proxy = connection.execute(insert)
+        ans = f"{PROJECT_NAME} inserted"
+
+
+
+
+
+    
+
+    
+
 
 # the functions can be imported into another table
 #________________________________________________________________________________________________________________________
@@ -223,20 +262,45 @@ def show_table(table_name):
     return user_selection
 
 
-
-def show_bee_name(bee_no):
-    # the query object
-    query = s.select([st.columns.first_name, st.columns.last_name]).where(st.columns.bee_no==bee_no)
+def  retrieve_project_id():
+    # retrieve the id of the project just inserted
+     # the query object
+    query = s.select([st.columns.project_id, st.columns.project_name]).order_by(s.desc(st.columns.project_id)).limit(1)
     # execute query
     select_result_proxy = connection.execute(query)
-    full_name = [result for result in select_result_proxy]
-    bee_name = str(full_name[0][0]) + " " +  str(full_name[0][1])
-    return bee_name
 
+    for result in select_result_proxy:
+        project_id = result[0]
+
+    print(project_id)
+
+    return project_id
+    
+# jointed - projects_ project_status
+def active_projects()-> int:
+    """select active projects
+
+    Returns:
+        int: the id of the selected project
+    """
+    # the query object
+    join_statement = st.join(ps,ps.columns.project_status_id == st.columns.project_status_id)
+    query = s.select([st.columns.project_id, st.columns.project_name]).select_from(join_statement).where(ps.columns.project_status_desc == "ACTIVE")
+    # execute query
+    select_result_proxy = connection.execute(query)
+    selected_items = [result for result in select_result_proxy] #convert to 2d list
+    items_dict = {item[0]:item[1] for item in selected_items} #convert tuples to dict
+
+    print(F"\nActive projects")
+    print("***************************************************")
+    for key, value in items_dict.items():
+        print(f"{key}:{value}")
+    print("\n***************************************************")
+    user_selection = int(input("select project: "))
+    print(f"{items_dict[user_selection]} selected")
+
+    return user_selection
 
 
 if __name__ == "__main__":
-    #display_table("bees")
-    bee_no = 14
-    show_bee_name(bee_no)
-
+    display_table("project")

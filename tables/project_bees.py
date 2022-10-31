@@ -1,44 +1,67 @@
 #connection
+from ast import And
 import sqlalchemy as s
 from connect import engine
 from connect import connection
 from connect import metadata
 
-
+import tables.project as project
+import bees as bees
+import tables.project_fund as project_fund
 # create table object, called selected table, st
-st = s.Table("project_category", metadata, autoload=True, autoload_with=engine) #project_category
+st = s.Table("project_bees", metadata, autoload=True, autoload_with=engine) #project_source
+b = s.Table("bees", metadata, autoload=True, autoload_with=engine) #project_source
 
 
 # the functions that are imported into the display table and view table, adapt/change this when updating a table.
 #________________________________________________________________________________________________________________________
 def select_table():
     # the query object
-    query = s.select([st.columns.project_category_id, st.columns.project_category_desc])
+    query = s.select([st.columns.project_bees_id, st.columns.project_id,st.columns.bee_no])
     # execute query
     select_result_proxy = connection.execute(query)
     return select_result_proxy
 
 def update_table():
-    project_category_id = int(input("Select project category id: "))
-    project_category_desc = input("Insert project category desc: ")
+    fund_bees_id = int(input("Select fund_bees id: "))
+    project_fund_id = input("Insert project fund_id: ")
+    bee_no = input("Insert bee no: ")
 
-    update = s.update(st).values(project_category_desc=project_category_desc).where(st.columns.project_category_id == project_category_id)
+    update = s.update(st).values(project_fund_id= project_fund_id,bee_no=bee_no).where(st.columns.fund_bees_id == fund_bees_id)
     proxy = connection.execute(update)
     ans = "selected id updated"
     return ans
 
 def delete_table():
-    project_category_id = int(input("Select project category id: "))
-    query = s.delete(st).where(st.columns.project_category_id == project_category_id)
+    fund_bees_id = int(input("Select fund_bees_id: "))
+    query = s.delete(st).where(st.columns.fund_bees_id == fund_bees_id)
     proxy = connection.execute(query)
     ans = "selected id deleted"
     return ans
 
-def insert_table():
-    project_category_desc = str.upper(input("Insert project category desc: "))
-    insert = s.insert(st).values(project_category_desc=project_category_desc)
-    proxy = connection.execute(insert)
-    ans = f"{project_category_desc} inserted"
+def insert_table(project_id):
+    while True:
+        bee_no = bees.display_table("bees")
+        # check if project_id and bee_no already recorded to avoid repetition
+        available = check_project_bee_availability(project_id,bee_no)
+        if not available:
+            insert_fund_bees = s.insert(st).values(
+                project_id=project_id,
+                bee_no=bee_no)
+            proxy = connection.execute(insert_fund_bees)
+        else:
+            print(f"Bee no {bee_no} already recorded.")
+
+        user_input = str.lower(input("another bee? (y/n)?:"))
+
+        if user_input == "y":
+            pass
+        elif user_input == "n":
+            break
+        else:
+            print("wrong input")
+
+    # proceed with project fund table
 
 
 # the functions can be imported into another table
@@ -203,11 +226,46 @@ def show_table(table_name):
         else:
             print("Wrong input")
 
-        selected_category = output_dict[user_selection]
+    return user_selection
 
-    return (user_selection,selected_category)
+
+        
+    for key,value in salary.items():
+        print(f"{key}:{value}")
+    return salary
+
+
+
+
+
+def check_project_bee_availability(project_id : int,bee_no: int) -> bool:
+    """scan through the database for entries with similar project_id and scan_id
+
+    Args:
+        project_id (int): project_id
+        bee_no (int): be_no
+
+    Returns:
+        bool: returns true if it finds one
+    """
+
+    query = s.select([st.columns.project_id,st.columns.bee_no]).where(st.columns.project_id==project_id and st.columns.bee_no==bee_no )
+    select_result_proxy = connection.execute(query)
+    items = [result for result in select_result_proxy]
+
+    composite_key = [int(str(item[0])+str(item[1])) for item in items]
+    composite_check = int(str(project_id) + str(bee_no))
+    
+    if composite_check in composite_key:
+        availability = True
+    else:
+        availability = False
+
+    return availability
+    
 
 
 if __name__ == "__main__":
-    display_table("project_category")
-
+    ava = check_project_bee_availability(36,9)
+    print(ava)
+    

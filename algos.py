@@ -1,5 +1,9 @@
 
 import csv
+from curses.ascii import isdigit
+from datetime import date
+
+#_____________________________________________________________________________________________________________#
 
 def project_name(date, clientName, category):
     """establish the name of the project, should be used as primary key"""
@@ -11,61 +15,96 @@ def project_name(date, clientName, category):
     return prjt_name
 
 
-def client_name():
-    """record the client name for the project"""
+def client_name()-> str:
+    """record the client name for the project
+
+    Returns:
+        str: client name
+    """
+    
     global name
-    print("\n****NAME OF CLIENT****")
-    correct = True
-    while correct:
+    print("\n client name")
+    print("***************************************************")
+    while True:
         name = str.lower(input("insert name:"))
-
         if " " in name:
-            correct = True
-            print("first and surname should be joined by hyphen\n"
-                  "check instructions")
+            print("first and surname should be joined by hyphen\n")
         elif name is None:
-            correct = True
-            print("a project must have a client, how do you pay bills, without him?")
-
+            print("a project must have a client, how do you pay bills, without him/her?")
         else:
-            correct = False
+            break
+    print("***************************************************")
 
     return name
 
 
 # Date algorithim
+def datetime_enforcer(description: str, lower_limit:int,upper_limit:int)-> int:
+    """_summary_
 
-def date_setup(purpose):
-    """generate the date object at time of the recording"""
-    global current_date
-    from datetime import date
-    print()
-    print(f"{purpose}")
-    print("***************************************************")
-    print( "1) Today's date\n"
-          "2) Custom date")
-    print("___________________________________________________")
-    user_option = int(input("insert: "))
-    print("***************************************************")
+    Args:
+        description (str): enforces the input provided by the user; can be date, month or year
+        lower_limit (int): it should not surpass this point
+        upper_limit (int): it should not go above this point
 
-    if user_option == 1:
-        current_date = date.today()
+    Returns:
+        int: the correct value for date, month or year
+    """
+    while True:
+        custom_date = input(f"{description}:")
+        if custom_date.isdigit():
+            custom_date = int(custom_date)
+            if custom_date >= lower_limit and custom_date <= upper_limit :
+                break
+        print("Try again")
+    return custom_date
 
-    elif user_option == 2:
-        custom_date = int(input("date:"))
-        custom_month = int(input("month:"))
-        custom_year = int(input("year:"))
+def date_setup(date_purpose:str)-> str:
+    """Set up the string format for a date
+
+    Args:
+        date_purpose (str): The description of the use of the date i.e commencment date, completion date
+
+    Returns:
+        str: date in str format
+    """
+    while True:
+        print()
+        print(f"{date_purpose}")
+        print("***************************************************")
+        print( "1) Today's date\n"
+              "2) Custom date")
+        print("___________________________________________________")
+        user_option = input("insert: ")
         print("***************************************************")
 
-        current_date = date(custom_year, custom_month, custom_date)
+        if user_option.isdigit():
+            user_option = int(user_option)
+            if user_option == 1:
+                current_date = date.today()
+                break
+            elif user_option == 2:
+                custom_date = datetime_enforcer("date", 1,31)
+                custom_month = datetime_enforcer("month",1,12)
+                custom_year = datetime_enforcer("year",2022,2022)
+                print("***************************************************")
+                current_date = date(custom_year, custom_month, custom_date)
+                break
+            else:
+                print("Wrong input, try again.")
+        else:
+            print("Wrong input, try again.")
 
-    # format date to string format
+    # format date to string format 
     current_date =current_date.strftime('%Y-%m-%d %H:%M:%S')
-    
+
     return current_date
 
 
+
 ## project fund algos
+#_____________________________________________________________________________________________________________#
+
 def project_fund():
     """Total amount paid for the project"""
     print("\n****PROJECT FUND*****")
@@ -221,6 +260,7 @@ def salaries_matrix(filename, salary, bees_no):
 
 
 #bees algos
+#_____________________________________________________________________________________________________________#
 
 def gender_type():
     gender_dict= {1:"MALE",2:"FEMALE"}
@@ -237,6 +277,7 @@ def gender_type():
 
 
 #pay algos
+#_____________________________________________________________________________________________________________#
 
 def salaries_matrix(salary, bees_no_dict: dict):
     """Picks up the salaries fund and sub divides among the bees"""

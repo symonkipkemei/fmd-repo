@@ -4,8 +4,8 @@ from connect import engine
 from connect import connection
 from connect import metadata
 
-import project as project
-import scope as scope
+import tables.project as project
+import tables.scope as scope
 # create table object, called selected table, st
 st = s.Table("project_scope", metadata, autoload=True, autoload_with=engine) #project_source
 
@@ -39,10 +39,16 @@ def delete_table():
 def insert_table(PROJECT_ID):
     while True:
         SCOPE_ID = scope.show_table("scope")
-        insert_project_scope = s.insert(st).values(
-            project_id=PROJECT_ID,
-            scope_id=SCOPE_ID)
-        proxy = connection.execute(insert_project_scope)
+        # check if project_id and bee_no already recorded to avoid repetition
+        available = check_project_scope_availability(PROJECT_ID,SCOPE_ID)
+        if not available:
+            insert_project_scope = s.insert(st).values(
+                project_id=PROJECT_ID,
+                scope_id=SCOPE_ID)
+            proxy = connection.execute(insert_project_scope)
+        else:
+            print(f"Scope_id: {SCOPE_ID} already recorded.")
+
         user_input = str.lower(input("Do you want to add another scope (y/n)?:"))
 
         if user_input == "y":
@@ -218,6 +224,36 @@ def show_table(table_name):
             print("Wrong input")
 
     return user_selection
+
+
+def check_project_scope_availability(project_id : int,scope_id: int) -> bool:
+    """scan through the database for entries with similar project_id and scan_id
+
+    Args:
+        project_id (int): project_id
+        bee_no (int): be_no
+
+    Returns:
+        bool: returns true if it finds one
+    """
+
+    query = s.select([st.columns.project_id,st.columns.bee_no]).where(st.columns.project_id==project_id and st.columns.scope_id==scope_id )
+    select_result_proxy = connection.execute(query)
+    items = [result for result in select_result_proxy]
+
+    # a composite key to identify unique project_id and scope_id unique entries
+
+    composite_key = [int(str(item[0])+str(item[1])) for item in items]
+
+    # the project_id and scope_id  we are going to check against
+    composite_check = int(str(project_id) + str(scope_id))
+    
+    if composite_check in composite_key:
+        availability = True
+    else:
+        availability = False
+
+    return availability
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 
+from select import select
 import sqlalchemy as s
 from connect import engine
 from connect import connection
@@ -6,15 +7,16 @@ from connect import metadata
 
 import algos
 
-import project_category as project_category 
-import project_source as project_source
-import project_status as project_status
-import scope as scope
-import project as project
-import project_scope as project_scope
-import project_fund as project_fund
+import tables.project_category as project_category 
+
+import tables.project_source as project_source
+import tables.project_status as project_status
+import tables.scope as scope
+import tables.project as project
+import tables.project_scope as project_scope
+import tables.project_fund as project_fund
 import project_bees as project_bees
-import pay
+import tables.pay as pay
 
 st = s.Table("project", metadata, autoload=True, autoload_with=engine) #selected table
 ps = s.Table("project_scope", metadata, autoload=True, autoload_with=engine) #project_scope
@@ -26,7 +28,7 @@ def add_project_to_database():
     DATE_COMMENCMENT = algos.date_setup("date of commencment")
 
     #extract the category name in order to create the project name
-    return_value = project_category.show_table("project_category")
+    return_value = project_category.display_table("project_category")
     PROJECT_CATEGORY_ID = return_value[0]
     PROJECT_CATEGORY = str.lower(return_value[1])
 
@@ -72,6 +74,10 @@ def add_project_to_database():
         pay.insert_table(PROJECT_ID,salaries)
     
 
+def active_projects():
+    selected_projects = project.active_projects()
 
 
-add_project_to_database()
+if __name__ == "__main__":
+    add_project_to_database()
+
