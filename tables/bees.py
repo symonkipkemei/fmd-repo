@@ -90,8 +90,7 @@ def display_table(table_name):
         # record the output in a dict ( key and value); id and the name
         items = [result for result in select]
         items_dict = {item[0]:(item[1] + " " + item[2]) for item in items}
-        print(items_dict)
-        output_dict = {}
+    
 
         # insert option to update if input is missing
         changes = {"u":"update","d":"delete","i":"insert" }
@@ -120,7 +119,7 @@ def display_table(table_name):
         #_______________________________________________________________________________________
         if user_selection.isdigit():
             user_selection = int(user_selection)
-            if user_selection in output_dict.keys():
+            if user_selection in items_dict.keys():
                 try_again = False
             else:
                 print("Integer selected out of range")

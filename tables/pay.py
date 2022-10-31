@@ -5,7 +5,7 @@ from connect import connection
 from connect import metadata
 
 import tables.project as project
-import bees as bees
+import tables.bees as bees
 import tables.project_fund as project_fund
 
 import algos
@@ -51,19 +51,12 @@ def insert_table(project_id,salary):
     salary = float(salary)
     list_details =[]
     #select bees who did this particular project
-    join_statement = st.join(pb,pb.columns.project_bees_id ==st.columns.project_bees_id)#.join(b,b.columns.bee_no == pb.columns.bee_no)
     query = s.select([pb.columns.project_bees_id,pb.columns.bee_no]).where(pb.columns.project_id == project_id)#.select_from(join_statement)#
     select_result_proxy = connection.execute(query)
 
-    for result in select_result_proxy:
-        print(result)
-        project_bees_id = result[0]
-        bee_no = result[1]
-        #last_name= result[2]
-        item = [project_bees_id,bee_no]
-        list_details.append(item)
- 
-        
+    list_details = [ [result[0], result[1]] for result in select_result_proxy]
+
+
     for list_item in list_details:
         bee_name = bees.show_bee_name(list_item[1])
         amount_earned = float(input(f"{str.upper(bee_name)} SHARE : "))
@@ -73,6 +66,14 @@ def insert_table(project_id,salary):
         rem = salary - amount_earned
         salary = rem
         print(f"REMAINING SALARY : {rem}")
+
+    if salary != 0:
+        print(f"The was an error in recording the input, the unassigned remaining salary is {salary} ")
+
+        error = True
+    else:
+        error = False
+    return error
 
 
 # the functions can be imported into another table

@@ -15,7 +15,7 @@ import tables.scope as scope
 import tables.project as project
 import tables.project_scope as project_scope
 import tables.project_fund as project_fund
-import project_bees as project_bees
+import tables.project_bees as project_bees
 import tables.pay as pay
 
 st = s.Table("project", metadata, autoload=True, autoload_with=engine) #selected table
@@ -23,6 +23,12 @@ ps = s.Table("project_scope", metadata, autoload=True, autoload_with=engine) #pr
 
 
 def add_project_to_database():
+
+    #ensure the ids are intandem with the database for it to work
+    # PROJECT STATUS ID
+    ACTIVE_ID = 4
+    COMPLETE_ID = 5
+    CANCELLED_ID = 6
 
     CLIENT_NAME = algos.client_name()
     DATE_COMMENCMENT = algos.date_setup("date of commencment")

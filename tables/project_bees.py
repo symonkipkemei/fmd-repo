@@ -6,7 +6,7 @@ from connect import connection
 from connect import metadata
 
 import tables.project as project
-import bees as bees
+import tables.bees as bees
 import tables.project_fund as project_fund
 # create table object, called selected table, st
 st = s.Table("project_bees", metadata, autoload=True, autoload_with=engine) #project_source

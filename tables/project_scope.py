@@ -237,7 +237,7 @@ def check_project_scope_availability(project_id : int,scope_id: int) -> bool:
         bool: returns true if it finds one
     """
 
-    query = s.select([st.columns.project_id,st.columns.bee_no]).where(st.columns.project_id==project_id and st.columns.scope_id==scope_id )
+    query = s.select([st.columns.project_id,st.columns.scope_id]).where(st.columns.project_id==project_id and st.columns.scope_id==scope_id )
     select_result_proxy = connection.execute(query)
     items = [result for result in select_result_proxy]
 
