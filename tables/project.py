@@ -1,4 +1,5 @@
 #connection
+from pymysql import NULL
 import sqlalchemy as s
 from connect import engine
 from connect import connection
@@ -14,7 +15,7 @@ import tables.scope as scope
 # create table object, called selected table, st
 st = s.Table("project", metadata, autoload=True, autoload_with=engine) #project
 ps = s.Table("project_status", metadata, autoload=True, autoload_with=engine) #project status
-
+psc = s.Table("project_scope", metadata, autoload=True, autoload_with=engine) #project scope
 
 # the functions that are imported into the display table and view table, adapt/change this when updating a table.
 #________________________________________________________________________________________________________________________
@@ -49,6 +50,31 @@ def update_table():
     proxy = connection.execute(update)
     ans = "selected id updated"
     return ans
+
+def update_status(PROJECT_ID,PROJECT_STATUS_ID):
+    update = s.update(st).values(project_status_id=PROJECT_STATUS_ID).where(st.columns.project_id == PROJECT_ID)
+    proxy = connection.execute(update)
+    ans = "selected id updated"
+    return ans
+
+
+def selective_update(PROJECT_ID, PROJECT_CATEGORY_ID, PROJECT_SOURCE_ID, DATE_COMPLETION,PROJECT_STATUS_ID):
+
+    #coincidentall the project_id is similar to project fund id
+    PROJECT_FUND_ID = PROJECT_ID
+
+    update = s.update(st).values(
+        project_category_id=PROJECT_CATEGORY_ID,
+        project_source_id=PROJECT_SOURCE_ID,
+        project_status_id=PROJECT_STATUS_ID,
+        date_completion=DATE_COMPLETION,
+        project_fund_id = PROJECT_FUND_ID
+        ).where(st.columns.project_id == PROJECT_ID)
+
+    proxy = connection.execute(update)
+    ans = f"{PROJECT_ID} inserted"
+
+
 
 def delete_table():
     id_selection = int(input("Select project id: "))
@@ -278,14 +304,14 @@ def  retrieve_project_id():
     
 # jointed - projects_ project_status
 def active_projects()-> int:
-    """select active projects
+    """select active projects filter with project_status
 
     Returns:
         int: the id of the selected project
     """
     # the query object
     join_statement = st.join(ps,ps.columns.project_status_id == st.columns.project_status_id)
-    query = s.select([st.columns.project_id, st.columns.project_name]).select_from(join_statement).where(ps.columns.project_status_desc == "ACTIVE")
+    query = s.select([st.columns.project_id, st.columns.project_name]).select_from(join_statement).where(ps.columns.project_status_desc == "ACTIVE").order_by(s.asc(st.columns.project_name)).limit(10)
     # execute query
     select_result_proxy = connection.execute(query)
     selected_items = [result for result in select_result_proxy] #convert to 2d list
