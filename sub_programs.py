@@ -17,12 +17,29 @@ import tables.project_scope as project_scope
 import tables.project_fund as project_fund
 import tables.project_bees as project_bees
 import tables.pay as pay
+import tables.bees as bees
+
+
+import fund_table.co_account as co_account
+import fund_table.co_company as co_company
+import fund_table.co_fund as co_fund
+import fund_table.co_loans as co_loans
+import fund_table.co_loans_type as co_loans_type
+import fund_table.co_loans
+import fund_table.co_operations as co_operations
+import fund_table.co_salaries as co_salaries
+import fund_table.co_transaction as co_transaction
+import fund_table.co_transtatus as co_transtatus_id
+import fund_table.co_operations_type as co_operations_type
+
+
+
 
 st = s.Table("project", metadata, autoload=True, autoload_with=engine) #selected table
 ps = s.Table("project_scope", metadata, autoload=True, autoload_with=engine) #project_scope
 
 
-def insert_data():
+def insert_project_data():
 
     #ensure the ids are intandem with the database for it to work
     # PROJECT STATUS ID
@@ -160,10 +177,81 @@ def insert_project_bee_salary():
             break
 
         
+
+
+def insert_transaction_data():
+    #account_id
+    co_account_id = co_account.display_table("account_id")
+
+    # co_fund
+    co_fund_id = co_fund.display_table("co_fund")
+    #company_fund or salaries_fund
+    if co_fund_id == 1: 
+        co_company_id = co_company.display_table("co_company")
+        print("complete")
+        #operations or loan_allocation
+        if co_company_id == 1:#operations
+            #project_fund or running_cost
+            co_operations_type_id = co_operations_type.display_table("operation_type")
+            if co_operations_type_id == 1: #project_fund
+                co_transtatus_id = 1
+                co_operation_id = co_operations.display_table("co_operations",co_operations_type_id,co_company_id)
+                money_in = algos.money_setup("Money in")
+                date_of_transaction = algos.date_setup("date of transaction")
+                co_transaction_id =co_transaction.insert_table_operations_money_in(co_account_id,co_operation_id,co_transtatus_id,money_in,date_of_transaction)
+
+            elif co_operations_type_id == 2: #running_cost
+                co_transtatus_id = 2
+                co_operation_id = co_operations.display_table("co_operations",co_operations_type_id,co_company_id)
+                money_out = algos.money_setup("Money out")
+                date_of_transaction = algos.date_setup("date of transaction")
+                co_transaction_id =co_transaction.insert_table_operations_money_out(co_account_id,co_operation_id,co_transtatus_id,money_out,date_of_transaction)
+
+            else:
+                print("I need an update")
+
+        elif co_company_id == 2:#loans
+            #loan_issued or loans_repayed
+        
+            co_loan_type_id = co_loans_type.display_table("co_loan_type")
+
+            if co_loan_type_id == 1:
+                co_transtatus_id = 2
+                bee_no = bees.display_table("bees")
+                co_loans.insert_table(co_company_id,bee_no,co_loan_type_id)
+                co_loans_id = co_loans.retrieve_co_loans_id()
+                money_out = algos.money_setup("Money out")
+                date_of_transaction = algos.date_setup("date of transaction")
+
+                co_transaction_id =co_transaction.insert_table_loans_money_out(co_account_id,co_loans_id,co_transtatus_id,money_out,date_of_transaction)
+
+            elif co_loan_type_id == 2:
+                co_transtatus_id = 1
+                bee_no = bees.display_table("bees")
+                co_loans.insert_table(co_loan_type_id,co_company_id,bee_no)
+                co_loans_id = co_loans.retrieve_co_loans_id()
+                money_in = algos.money_setup("Money in")
+                date_of_transaction = algos.date_setup("date of transaction")
+                co_transaction_id =co_transaction.insert_table_loans_money_in(co_account_id,co_loans_id,co_transtatus_id,money_in,date_of_transaction)
+
+        else:
+            print("I need an update")
+
+    elif co_fund_id == 2:
+        co_transtatus_id = 2
+        bee_no = bees.display_table("bees")
+        co_salaries.insert_table(co_fund_id,bee_no)
+        co_salaries_id = co_salaries.retrieve_salaries_id()
+        money_out = algos.money_setup("Money out")
+        date_of_transaction = algos.date_setup("date of transaction")
+        co_transaction.insert_table_salaries_money_out(co_account_id,co_salaries_id,co_transtatus_id,money_out,date_of_transaction)
+    else:
+        print("error")
         
 
 
+
 if __name__ == "__main__":
-    insert_project_bee_salary()
+    insert_transaction_data()
     #add_project_to_database()
 

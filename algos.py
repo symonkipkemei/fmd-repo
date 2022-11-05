@@ -105,11 +105,11 @@ def date_setup(date_purpose:str)-> str:
 ## project fund algos
 #_____________________________________________________________________________________________________________#
 
-def project_fund():
+def money_setup(money_purpose):
     """Total amount paid for the project"""
-    print("\n****PROJECT FUND*****")
-    projectFund = float(input("Amount paid:"))
-    return projectFund
+    print(f"\n****{money_purpose}*****")
+    amount = float(input("Amount:"))
+    return amount
 
 
 def project_funds_distribution_V2(project_source_id, project_fund):
