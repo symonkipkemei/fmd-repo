@@ -40,7 +40,7 @@ def main():
             print("In progress")
         # view active projects
         elif user_selection == 4:
-            print("In progress")
+            sp.update_project_data()
         # formode fund
         elif user_selection == 5:
             print("In progress")

@@ -236,8 +236,6 @@ def show_table(table_name):
 
 
 
-
-
 def check_project_bee_availability(project_id : int,bee_no: int) -> bool:
     """scan through the database for entries with similar project_id and scan_id
 

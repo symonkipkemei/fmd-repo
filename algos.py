@@ -127,7 +127,7 @@ def project_funds_distribution_V2(project_source_id, project_fund):
     # brian_income ( director 2)
     # other_income  (employee)
 
-    if project_source_id == 1:
+    if project_source_id == 1: #fiverr
         client_fee = project_fund
         distribution_factor = (2/3) # distribution to reality
         real_fee = distribution_factor * client_fee
@@ -157,7 +157,7 @@ def project_funds_distribution_V2(project_source_id, project_fund):
         
         return funds
 
-    elif project_source_id == 2:
+    elif project_source_id == 2: #physical
         client_fee = project_fund
         distribution_factor = (2/3) # distribution to reality
         real_fee = distribution_factor * client_fee
@@ -192,9 +192,39 @@ def project_funds_distribution_V2(project_source_id, project_fund):
         funds = (company_fund, consultancies, salaries, tax)
 
         return funds
+    elif project_source_id == 3: #competition
+        print("Gopillar projects yet to be factored")
     
+    elif project_source_id == 5: #paypal
+        client_fee = project_fund
+        distribution_factor = (2/3) # distribution to reality
+        real_fee = distribution_factor * client_fee
+        
+        # real_fee should always be a whole number rounded to 0 or 5 to make it convincing
+        base = 5
+        real_fee = base * round(real_fee /5)
+
+        # optical illusion achieved
+        optical_fee = client_fee - real_fee
+        paypal_tax_o = 0.05 * optical_fee
+        formode_tax_o = optical_fee - paypal_tax_o
+
+        # back to reality
+        paypal_tax_r = 0.05 * real_fee
+        project_bee_salary =round(0.85 * real_fee)
+        formode_tax_r = ( real_fee - ( paypal_tax_r + project_bee_salary))
+
+        company_fund = formode_tax_o + formode_tax_r
+        salaries = project_bee_salary
+        tax = paypal_tax_o + paypal_tax_r
+
+        # consultancies
+        consultancies = 0
+
+        funds = (company_fund,consultancies, salaries, tax)
+
     else:
-        print("ther projects yet to be included")
+        print("projects fund yet to be included")
 
 
 def dollars_ksh():

@@ -242,7 +242,37 @@ def show_table(table_name):
 
 
 
+def salaries_total(bee_no):
+    # the query object
+    join_statement = st.join(pb,pb.columns.project_bees_id == st.columns.project_bees_id).join(p,p.columns.project_id == pb.columns.project_id)
+    query = s.select([p.columns.project_id,p.columns.project_name,st.columns.pay_amount,p.columns.date_completion]).select_from(join_statement).where(pb.columns.bee_no == bee_no).order_by(s.asc(p.columns.date_completion))
+    # execute query
+    select_result_proxy = connection.execute(query)
+    selected_items = [result for result in select_result_proxy] #convert to 2d list
+
+    bee_name = bees.show_bee_name(bee_no)
+   
+    sum = 0
+    print()
+    print(f"total project completed by bee: {bee_name}")
+    print("*************************************************")
+    #item[0]- project_id
+    #item[1]- project_name
+    #item[2]- pay_amount
+    #item[3]- date completion
+    
+    for items in selected_items:
+        if items is not None:
+            sum += items[2] * 110
+        print(f"id: {items[0]} ~~~ project_name : {items[1]} ~~~  pay_amount: {items[2] * 110} ~~~  date_completion: {items[3]}")
+
+    print("*************************************************")
+
+    print(f"Total sum: {sum}")
+
+    return sum
+    
+
 if __name__ == "__main__":
-    project_id = 28
-    salaries = 374
-    insert_table(project_id,salaries)
+    salaries_total(3)
+

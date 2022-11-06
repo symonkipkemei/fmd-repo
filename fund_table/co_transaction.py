@@ -5,8 +5,15 @@ from connect import connection
 from connect import metadata
 
 
+from tables.bees import show_bee_name
+
 # create table object, called selected table, st
 st = s.Table("co_transaction", metadata, autoload=True, autoload_with=engine) #project_category
+cs = s.Table("co_salaries", metadata, autoload=True, autoload_with=engine) #co salaries
+cl = s.Table("co_loans", metadata, autoload=True, autoload_with=engine) #co loans
+
+
+
 
 
 # the functions that are imported into the display table and view table, adapt/change this when updating a table.
@@ -201,6 +208,87 @@ def show_table(table_name):
     return (user_selection,selected_category)
 
 
+
+def salaries_payed(bee_no):
+    # the query object
+    join_statement = st.join(cs,cs.columns.co_salaries_id == st.columns.co_salaries_id)
+    query = s.select([st.columns.co_transaction_id, st.columns.money_out, st.columns.date_of_transaction ]).select_from(join_statement).where(cs.columns.bee_no == bee_no).order_by(s.asc(st.columns.date_of_transaction))
+    # execute query
+    select_result_proxy = connection.execute(query)
+    selected_items = [result for result in select_result_proxy] #convert to 2d list
+
+    bee_name = show_bee_name(bee_no)
+   
+    sum = 0
+    print()
+    print(f"total salaries payed to bee: {bee_name}")
+    print("*************************************************")
+    #item[0]- transaction_id
+    #item[1]- money_out
+    #item[2]- date_of_transaction
+    for items in selected_items:
+        sum += items[1]
+        print(f"id: {items[0]} ~~~ money_out : {items[1]} ~~~  date: {items[2]} ")
+
+    print("*************************************************")
+    print(f"Total sum: {sum}")
+    return sum
+
+def loans_issued(bee_no):
+    # the query object
+    join_statement = st.join(cl,cl.columns.co_loans_id == st.columns.co_loans_id)
+    query = s.select([st.columns.co_transaction_id, st.columns.money_out, st.columns.date_of_transaction ]).select_from(join_statement).where(s.and_(cl.columns.bee_no == bee_no, cl.columns.co_loans_type_id == 1)).order_by(s.asc(st.columns.date_of_transaction))
+    # execute query
+    select_result_proxy = connection.execute(query)
+    selected_items = [result for result in select_result_proxy] #convert to 2d list
+
+    bee_name = show_bee_name(bee_no)
+   
+    sum = 0
+    print()
+    print(f"total loans issued to bee: {bee_name}")
+    print("*************************************************")
+    #item[0]- transaction_id
+    #item[1]- money_out
+    #item[2]- date_of_transaction
+    for items in selected_items:
+        sum += items[1]
+        print(f"id: {items[0]} ~~~ money_out : {items[1]} ~~~  date: {items[2]} ")
+
+    print("*************************************************")
+    print(f"Total sum: {sum}")
+    return sum
+    pass
+
+def loans_repayed(bee_no):
+    # the query object
+    join_statement = st.join(cl,cl.columns.co_loans_id == st.columns.co_loans_id)
+    query = s.select([st.columns.co_transaction_id, st.columns.money_in, st.columns.date_of_transaction ]).select_from(join_statement).where(s.and_(cl.columns.bee_no == bee_no, cl.columns.co_loans_type_id == 2)).order_by(s.asc(st.columns.date_of_transaction))
+    # execute query
+    select_result_proxy = connection.execute(query)
+    selected_items = [result for result in select_result_proxy] #convert to 2d list
+
+    bee_name = show_bee_name(bee_no)
+   
+    sum = 0
+    print()
+    print(f"total loans repayed by bee: {bee_name}")
+    print("*************************************************")
+    #item[0]- transaction_id
+    #item[1]- money_out
+    #item[2]- date_of_transaction
+    for items in selected_items:
+        if items is not None:
+            sum += items[1]
+        print(f"id: {items[0]} ~~~ money_out : {items[1]} ~~~  date: {items[2]} ")
+
+    print("*************************************************")
+    print(f"Total sum: {sum}")
+    return sum
+    
+
 if __name__ == "__main__":
-    display_table("co_transaction")
+    loans_repayed(2)
+    loans_issued(2)
+    salaries_payed(2)
 

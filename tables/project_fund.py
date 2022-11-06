@@ -37,8 +37,8 @@ def delete_table():
     return ans
 
 def insert_table(project_source_id):
-    project_fund = algos.project_fund()
-    company_fund,consultancies_fund,salaries,tax = algos.project_funds_distribution_V2(project_source_id,project_fund)
+    project_fund = algos.project_fund() # allow the user to input the amount set aside for the project
+    company_fund,consultancies_fund,salaries,tax = algos.project_funds_distribution_V2(project_source_id,project_fund) #distribute funds according to the source.
     insert = s.insert(st).values(project_fund=project_fund,company_fund=company_fund,consultancies_fund=consultancies_fund,salaries_fund=salaries,tax=tax)
     proxy = connection.execute(insert)
     ans = f"{project_fund} inserted"

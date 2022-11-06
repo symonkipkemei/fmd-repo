@@ -96,11 +96,69 @@ def insert_project_data():
         # pay the active bees
         pay.insert_table(PROJECT_ID,salaries)
     
+def complete_project_data():
+    #update the completion date, status as well as the project fund and bee salaries.
+
+       #ensure the ids are intandem with the database for it to work
+    # PROJECT STATUS ID
+    ACTIVE_ID = 1
+    COMPLETE_ID = 2
+    CANCELLED_ID = 3
+
+    CLIENT_NAME = algos.client_name()
+    DATE_COMMENCMENT = algos.date_setup("date of commencment")
+
+    #extract the category name in order to create the project name
+    return_value = project_category.display_table("project_category")
+    PROJECT_CATEGORY_ID = return_value[0]
+    PROJECT_CATEGORY = str.lower(return_value[1])
+
+    PROJECT_NAME = algos.project_name(DATE_COMMENCMENT,CLIENT_NAME,PROJECT_CATEGORY)
+    PROJECT_SOURCE_ID = project_source.display_table("project_source")
+    PROJECT_STATUS_ID = project_status.display_table("project_status")
+
+     # ADD PROJECT FUND
+    PROJECT_FUND_ID =project_fund.insert_table(PROJECT_SOURCE_ID)
+
+
+    if PROJECT_STATUS_ID == ACTIVE_ID:
+        # ADD PROJECT TABLE
+        project.insert_table(CLIENT_NAME,DATE_COMMENCMENT,PROJECT_CATEGORY_ID,PROJECT_NAME,PROJECT_SOURCE_ID,PROJECT_STATUS_ID,PROJECT_FUND_ID,date_completion=False)
+        
+        # retirieve project id
+        PROJECT_ID = project.retrieve_project_id()
+
+        # ADD PROJECT SCOPE
+        project_scope.insert_table(PROJECT_ID)
+
+       
+
+
+    elif PROJECT_STATUS_ID == COMPLETE_ID:
+
+        # ADD PROJECT TABLE + DATE COMPLETION
+        project.insert_table(CLIENT_NAME,DATE_COMMENCMENT,PROJECT_CATEGORY_ID,PROJECT_NAME,PROJECT_SOURCE_ID,PROJECT_STATUS_ID,PROJECT_FUND_ID,date_completion=True)
+
+        # retirieve project id
+        PROJECT_ID = project.retrieve_project_id()
+
+        # ADD PROJECT SCOPE
+        project_scope.insert_table(PROJECT_ID)
+
+        # ADD FUND BEES ( BEES WHO DID THE WORK)
+        project_bees.insert_table(PROJECT_ID)
+
+        # show them salaries to be distributed.
+        salaries = project_fund.select_salaries(PROJECT_ID)
+
+        # pay the active bees
+        pay.insert_table(PROJECT_ID,salaries)
+    
 
 def update_project_table():
-    completion_status_id = 5
+    completion_status_id = 2 # the complete status choice
     while True:
-        print("\nUPDATING PROJECT TABLE")
+        print("\nMARK PROJECT COMPLETE")
 
         #show all projects that have the status active or null
         PROJECT_ID = project.active_projects()
@@ -126,7 +184,7 @@ def update_project_table():
         project_scope.insert_table(PROJECT_ID)
 
         print("*************************************************************")
-        user_selection = str.lower(input("\ninsert another project (y/n)?: "))
+        user_selection = str.lower(input("mark another project complete (y/n)?: "))
 
         if user_selection == "y":
             print("PROJECT COMPLETED")
@@ -178,7 +236,6 @@ def insert_project_bee_salary():
 
         
 
-
 def insert_transaction_data():
     #account_id
     co_account_id = co_account.display_table("account_id")
@@ -228,7 +285,7 @@ def insert_transaction_data():
             elif co_loan_type_id == 2:
                 co_transtatus_id = 1
                 bee_no = bees.display_table("bees")
-                co_loans.insert_table(co_loan_type_id,co_company_id,bee_no)
+                co_loans.insert_table(co_company_id,bee_no,co_loan_type_id)
                 co_loans_id = co_loans.retrieve_co_loans_id()
                 money_in = algos.money_setup("Money in")
                 date_of_transaction = algos.date_setup("date of transaction")
@@ -250,8 +307,45 @@ def insert_transaction_data():
         
 
 
+def bee_status(bee_no):
+    print("***********************SALARIES***********************")
+    # Establish all the projects done
+    salaries_total = pay.salaries_total(bee_no)
+    # Establish all the projects payed
+    salaries_payed = co_transaction.salaries_payed(bee_no)
+    salaries_remainder = salaries_total - salaries_payed
+    print("******************************************************")
+    print(f"Unpayed Salaries: {salaries_remainder}")
+    print()
+
+
+    print("***********************LOANS***********************")
+    # Establish all the projects done
+    loans_issued = co_transaction.loans_issued(bee_no)
+    # Establish all the projects payed
+    loans_repayed = co_transaction.loans_repayed(bee_no)
+    loans_remainder = loans_issued - loans_repayed
+    print("***************************************************")
+    print(f"Unpayed Salaries: {loans_remainder}")
+
+    print()
+    print("***********************NET INCOME***********************")
+    net_income = salaries_remainder - loans_remainder
+    print(f"{net_income}")
+
+
+
+
+    # net sum of projects handled.
+
+
+
+
+
 
 if __name__ == "__main__":
-    insert_transaction_data()
-    #add_project_to_database()
+    bee_status(2)
+    
+
+    
 
