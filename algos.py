@@ -107,8 +107,11 @@ def date_setup(date_purpose:str)-> str:
 
 def money_setup(money_purpose):
     """Total amount paid for the project"""
-    print(f"\n****{money_purpose}*****")
+    print()
+    print(f"{money_purpose}")
+    print("***************************************************")
     amount = float(input("Amount:"))
+    print("***************************************************")
     return amount
 
 
@@ -153,10 +156,8 @@ def project_funds_distribution_V2(project_source_id, project_fund):
         # consultancies
         consultancies = 0
 
-        funds = (company_fund,consultancies, salaries, tax)
+        funds = (company_fund,consultancies, salaries, tax, real_fee,formode_tax_r,fiverr_tax_r)
         
-        return funds
-
     elif project_source_id == 2: #physical
         client_fee = project_fund
         distribution_factor = (2/3) # distribution to reality
@@ -189,9 +190,8 @@ def project_funds_distribution_V2(project_source_id, project_fund):
         # consultancies
         consultancies = 0
 
-        funds = (company_fund, consultancies, salaries, tax)
+        funds = (company_fund, consultancies, salaries, tax,real_fee,formode_tax_r,physical_tax_r)
 
-        return funds
     elif project_source_id == 3: #competition
         print("Gopillar projects yet to be factored")
     
@@ -221,10 +221,12 @@ def project_funds_distribution_V2(project_source_id, project_fund):
         # consultancies
         consultancies = 0
 
-        funds = (company_fund,consultancies, salaries, tax)
+        funds = (company_fund,consultancies, salaries, tax,real_fee,formode_tax_r,paypal_tax_r)
 
     else:
         print("projects fund yet to be included")
+
+    return funds
 
 
 def dollars_ksh():

@@ -26,6 +26,7 @@ def main():
               "4) Active projects\n"
               "5) Formode Fund\n"
               "6) Net fund\n"
+              "7) Project calculator\n"
               "0) Quit")
         print("**************************************")
         user_selection = int(input("insert option: "))
@@ -47,6 +48,10 @@ def main():
         # settings
         elif user_selection == 6:
             print("In progress")
+
+        elif user_selection == 7:
+            sp.project_calculator()
+            
             
         # Quit
         elif user_selection == 0:

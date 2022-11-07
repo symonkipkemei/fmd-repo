@@ -336,16 +336,31 @@ def bee_status(bee_no):
 
 
 
-    # net sum of projects handled.
+def project_calculator():
+    print()
+    print(f"project calculator")
+    print("***************************************************")
 
+    project_source_id = project_source.display_table("project_source")
+    amount = algos.money_setup("amount paid")
+    company_fund,consultancies, salaries, tax,real_fee,formode_tax,tax_r = algos.project_funds_distribution_V2(project_source_id,amount)
 
+    print()
+    print(f"Fee distribution")
+    print("***************************************************")
+    print(f"project bounty : {real_fee}")
+    print(f"tax : {tax_r}")
+    print(f"formode fee : {formode_tax}")
+    print(f"Your fee : {salaries}")
+    print("___________________________________________________")
 
+    
 
 
 
 if __name__ == "__main__":
-    bee_status(2)
-    
+    #bee_status(2)
+    project_calculator()
 
     
 
