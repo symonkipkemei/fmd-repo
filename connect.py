@@ -2,7 +2,7 @@ import sqlalchemy as s
 import os
 
 password = os.environ["PW_MYSQL_ROOT"]
-database_name = "fmd-debug"
+database_name = "fmd-repo"
 
 #connection
 engine = s.create_engine(f"mysql+pymysql://root:{password}@localhost/{database_name}")

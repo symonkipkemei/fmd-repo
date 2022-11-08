@@ -391,10 +391,45 @@ def mark_active_projects():
             project.update_status(project_id,project_status_id,date_of_completion)
 
 
+def insert_transaction_income():
+
+    while True:
+        co_account_id = 1
+        co_fund_id = 1
+        co_company_id = 1
+        co_operations_type_id =1
+
+        co_transtatus_id = 1
+
+        # date of transaction
+        date_of_transaction = algos.date_setup("date of transaction")
+
+        # step 1
+
+        print("INSERT PHYSICAL PROJECT INCOME")
+
+        co_operation_id = 1
+        money_in_virtual = algos.money_setup("Money in - physical project")
+        co_transaction_id_1 =co_transaction.insert_table_operations_money_in(co_account_id,co_operation_id,co_transtatus_id,money_in_virtual,date_of_transaction)
+
+    
+        user = str.lower(input("do you want to add another set? (y/n):"))
+
+        if user == "y":
+            pass
+        elif user == "n":
+            break
+        else:
+            print("wrong input")
+
+    
+
  
 if __name__ == "__main__":
     #bee_status(2)
-    insert_transaction_data()
+    #insert_transaction_data()
+
+    insert_transaction_income()
 
     
 
