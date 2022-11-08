@@ -106,12 +106,33 @@ def date_setup(date_purpose:str)-> str:
 #_____________________________________________________________________________________________________________#
 
 def money_setup(money_purpose):
-    """Total amount paid for the project"""
+    """Records all transactions done in kenya shillings"""
     print()
     print(f"{money_purpose}")
     print("***************************************************")
     amount = float(input("Amount:"))
     print("***************************************************")
+    return amount
+
+
+def project_fund(money_purpose, usd = True):
+    """All project funds are recorded in usd
+
+    Args:
+        money_purpose (_type_): description of money type
+        usd (bool, optional): if not true amount is converted from ksh to usd. Defaults to True.
+
+    Returns:
+        _type_: amount to be recorderd in usd
+    """
+    print()
+    print(f"{money_purpose}")
+    print("***************************************************")
+    amount = float(input("Amount:"))
+    print("***************************************************")
+    if not usd:
+        exchange_rate = 110
+        amount = round(amount/exchange_rate)
     return amount
 
 
@@ -131,7 +152,7 @@ def project_funds_distribution_V2(project_source_id, project_fund):
     # other_income  (employee)
 
     if project_source_id == 1: #fiverr
-        client_fee = project_fund
+        client_fee = float(project_fund)
         distribution_factor = (2/3) # distribution to reality
         real_fee = distribution_factor * client_fee
         
@@ -248,48 +269,6 @@ def dollars_ksh():
     return money
 
 
-def salaries_matrix(filename, salary, bees_no):
-     """Picks up the salaries fund and sub divides among the bees"""
-     # store keys to the bees
-     category_dict = {}
-     # store amount allocated to each bee
-     pesa_dict = {}
-
-
-     # determine the bees from the index
-     with open(filename, "r") as f:
-             iterable = csv.reader(f)
-             list_iterable = list(iterable)
-             for x in list_iterable:
-                 category_dict[int(x[0])] = x[1]
-
-     print(f"TOTAL SALARIES FUND:{salary}")
-     count = 0
-
-     # loop through the bees-index
-     for x in bees_no:
-         # determine the keys in dictionary
-         for y in category_dict:
-             #if key in dict is similar to item in bees-index, then you've found the right person
-             if x == y:
-                 # loop to control greed/inappropiate allocation
-                 try_again = True
-                 while try_again == True:
-                     amount_earned = float(input(f"{category_dict[y]} SHARE : "))
-                     rem = (float(salary)) - amount_earned
-                     count += rem
-                     if  count <= 0:
-                         print("Don't be greedy, share the funds appropiately. Try again")
-                     else:
-                         print (f"Unallocated amount is {rem}")
-                         # record the amount allocated to the individual to the dictionary
-                         pesa_dict [x] = amount_earned
-                         try_again = False
-
-     print(pesa_dict)
-     return pesa_dict
-
-
 
 #bees algos
 #_____________________________________________________________________________________________________________#
@@ -304,8 +283,6 @@ def gender_type():
     user_input = int(input("choose:"))
 
     return gender_dict[user_input]
-
-
 
 
 #pay algos
@@ -325,3 +302,94 @@ def salaries_matrix(salary, bees_no_dict: dict):
 
         salary = amount_remaining
     return salary_app
+
+
+def display_fee_distribution(project_source_id,project_fund,timeline = True):
+
+    project_bounty,formode_fee,tax,salaries = project_funds_distribution_V3(project_source_id,project_fund,optical_illusion=True)
+
+    print()
+    print(f"Fee distribution")
+    print("***************************************************")
+    print(f"project bounty : {project_bounty}")
+    print(f"tax : {tax}")
+    print(f"formode fee : {formode_fee}")
+    print(f"Your fee : {salaries}")
+
+
+    if timeline is True:
+    
+        # Optical deadlines to ensure projects are completed on time always
+        expected_timeline = int(input("Real Timeline (days):"))
+        optical_timeline = round(2/3 * (expected_timeline)) 
+
+        print(f"Timeline: {optical_timeline} days")
+        
+    else:
+        pass
+    print("___________________________________________________")
+
+    
+
+def project_funds_distribution_V3(project_source_id, project_fund,optical_illusion= False):
+
+    client_fee = float(project_fund)
+    distribution_factor = (2/3) # distribution to reality
+    real_fee = distribution_factor * client_fee
+
+    # real_fee should always be a whole number rounded to 0 or 5 to make it convincing
+    base = 5
+    real_fee = base * round(real_fee /5)
+
+    # optical illusion achieved
+    optical_fee = client_fee - real_fee
+
+
+    if project_source_id == 1: #fiverr
+        #  illusion
+        illusion_tax = 0.2 * optical_fee
+        illusion_formode_fee = optical_fee - illusion_tax
+
+        # reality 
+        reality_tax = 0.2 * real_fee
+        bee_fees =round(0.7 * real_fee)
+        reality_formode_fee = ( real_fee - ( reality_tax + bee_fees))
+
+    elif project_source_id == 2: #physical
+        #  illusion
+        illusion_tax = 0
+        illusion_formode_fee = optical_fee - illusion_tax
+        # reality 
+        reality_tax = 0
+        bee_fees =round(0.9 * real_fee)
+        reality_formode_fee = ( real_fee - ( reality_tax + bee_fees))
+
+    elif project_source_id == 3: #competition
+        print("Gopillar projects yet to be factored")
+    
+    elif project_source_id == 5: #paypal
+        #  illusion
+        illusion_tax = 0.05 * optical_fee
+        illusion_formode_fee = optical_fee - illusion_tax
+        # reality 
+        reality_tax = 0.05 * real_fee
+        bee_fees =round(0.85 * real_fee)
+        reality_formode_fee = ( real_fee - ( reality_tax + bee_fees))
+
+    else:
+        print("projects fund yet to be included")
+
+    company_fund = reality_formode_fee + illusion_formode_fee
+    tax = reality_tax + illusion_tax
+    salaries = bee_fees
+    project_bounty = real_fee
+    illusion_tax = illusion_tax
+    illusion_formode = illusion_formode_fee
+
+    if optical_illusion is True:
+        package = (project_bounty,illusion_formode,illusion_tax,salaries)
+
+    else:
+        package = (company_fund,salaries,tax)
+
+    return package

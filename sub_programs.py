@@ -73,9 +73,7 @@ def insert_project_data():
         # ADD PROJECT SCOPE
         project_scope.insert_table(PROJECT_ID)
 
-       
-
-
+    
     elif PROJECT_STATUS_ID == COMPLETE_ID:
 
         # ADD PROJECT TABLE + DATE COMPLETION
@@ -334,33 +332,69 @@ def bee_status(bee_no):
     print(f"{net_income}")
 
 
-
-
 def project_calculator():
+
     print()
     print(f"project calculator")
     print("***************************************************")
-
     project_source_id = project_source.display_table("project_source")
-    amount = algos.money_setup("amount paid")
-    company_fund,consultancies, salaries, tax,real_fee,formode_tax,tax_r = algos.project_funds_distribution_V2(project_source_id,amount)
+    if project_source_id == 2:
+        project_fund = algos.project_fund("project fund",usd=False)
+    else:
+        project_fund = algos.project_fund("project fund")
 
-    print()
-    print(f"Fee distribution")
+    algos.display_fee_distribution(project_source_id,project_fund,timeline=False)
+
     print("***************************************************")
-    print(f"project bounty : {real_fee}")
-    print(f"tax : {tax_r}")
-    print(f"formode fee : {formode_tax}")
-    print(f"Your fee : {salaries}")
-    print("___________________________________________________")
 
     
+def mark_active_projects():
+
+    print("************ACTIVE PROJECTS**********")
+    print("1. View project Quote\n2. Mark project Complete")
+    print("************************************")
+    user_input = int(input("insert option: "))
+
+    project_id = project.active_projects()
+    project_source_id = project_source.retrieve_project_source_id(project_id)
+    fund_project, fund_company, fund_salary = project_fund.retrieve_project_company_salaries_fund(project_id)
+
+    if user_input == 1:
+        algos.display_fee_distribution(project_source_id,fund_project,timeline=True)
+     
+    
+    elif user_input == 2:
+        if project_id == 0:
+            return None
+        else:
+            # project completion date
+            project_status_id = 2 #from active to complete
+            date_of_completion = algos.date_setup("date of completion")
+            
+            # refresh project fund
+            project_fund_id = project_fund.update_table(project_source_id,project_id)
+        
+            # retreive new salary
+            fund_project_new, fund_company_new, fund_salary_new = project_fund.retrieve_project_company_salaries_fund(project_id)
+
+            # ADD FUND BEES ( BEES WHO DID THE WORK)
+            project_bees.insert_table(project_id)
 
 
+            # display salary
+            print(f"SALARY TO BE DISTRIBUTED : {fund_salary_new}")
 
+             # pay the active bees
+            pay.insert_table(project_id,fund_salary_new)
+
+            #close project
+            project.update_status(project_id,project_status_id,date_of_completion)
+
+
+ 
 if __name__ == "__main__":
     #bee_status(2)
-    project_calculator()
+    insert_transaction_data()
 
     
 

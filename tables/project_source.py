@@ -7,6 +7,7 @@ from connect import metadata
 
 # create table object, called selected table, st
 st = s.Table("project_source", metadata, autoload=True, autoload_with=engine) #project_source
+p = s.Table("project", metadata, autoload=True, autoload_with=engine) #project
 
 
 # the functions that are imported into the display table and view table, adapt/change this when updating a table.
@@ -39,6 +40,18 @@ def insert_table():
     insert = s.insert(st).values(project_source_desc=project_source_desc)
     proxy = connection.execute(insert)
     ans = f"{project_source_desc} inserted"
+
+
+# retrive project_source id for a given project
+
+def retrieve_project_source_id(project_id):
+    join_statment = st.join(p,p.columns.project_source_id == st.columns.project_source_id)
+    query = s.select([p.columns.project_source_id]).select_from(join_statment).where(p.columns.project_id == project_id)
+    select_result_proxy = connection.execute(query)
+    for result in select_result_proxy:
+        project_source_id = result[0]
+
+    return project_source_id
 
 
 # the functions can be imported into another table
@@ -207,5 +220,5 @@ def show_table(table_name):
 
 
 if __name__ == "__main__":
-    display_table("project_source")
+    display_table("project")
 

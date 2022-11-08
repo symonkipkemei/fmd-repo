@@ -51,8 +51,8 @@ def update_table():
     ans = "selected id updated"
     return ans
 
-def update_status(PROJECT_ID,PROJECT_STATUS_ID):
-    update = s.update(st).values(project_status_id=PROJECT_STATUS_ID).where(st.columns.project_id == PROJECT_ID)
+def update_status(PROJECT_ID,PROJECT_STATUS_ID,DATE_OF_COMPLETION):
+    update = s.update(st).values(project_status_id=PROJECT_STATUS_ID,date_completion=DATE_OF_COMPLETION ).where(st.columns.project_id == PROJECT_ID)
     proxy = connection.execute(update)
     ans = "selected id updated"
     return ans
