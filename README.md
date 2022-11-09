@@ -1,164 +1,149 @@
-# Who
-Formode is an architectural company built on the premise of big data , design and creativity.
 
-## Brief
+## Table of contents:
+- [Introduction](#intro)
+- [Technologies](#tech)
+- [project Setup](#projo)
+- [Illustrations](#illus)
+- [Project Information](#info)
+- [Contributing](#contri)
+- [Acknowledgments](#know)
 
-The brief of the project entails creating a dashboard  that allows the partners/employees to monitor their productivity, 
-rate of completion of projects ,recording all the projects in a financial year and sharing of revenue
+<INTRODUCTION>
 
-## Objectives
-The main items that should be achieved at the end of the project is :
-1.Recording all the projects' data
-2.Recording the company's expenditure and salaries
-3.Documenting the rate of productivity amongst users.
+<h1 id="intro">fmd-repo</h1>
 
+![nanagment](img/project-manager-roll.jpg)
 
-## output
-Generating reports at the end of every month
+**Why fmd-repo?**
 
-### OBJ 01. Recording all the projects' data
-#### Parameters
-1.date_commence
-8.client_name
-2.date_completion
-3.project_name
-4.project_source
-5.project_category
-5.project_by
-6.project_scope_of_work
-7.project_total_fund
-8.project_user_fund
-9.project_company_fund
-8.client_name
+One simple system to track the financial health of your architectural firm. Plan projects, resource staff, log time, track revenues and make profits!
+
+**usage**
+
+The programme is able to intuitively :
+1. Recording all the projects' data
+2. Recording all the transactions' data
+3. Track net revenue, expenditures and profits with a button
 
 
-#### parameters description
+**Rules of the game**
+ - Consistently update the project and transaction data and leave the rest to me 😊
 
-1.date_commence
-The date the company was commissioned to undertake a particular project.
-A binding contract set either with a deposit or escrow or timeline
+<TECHNOLOGIES>
 
-2.date_completion
-The date of end of contract. Contract terminated with release of full pay for
-the work completed
+<h1 id="tech">Technologies</h1>
 
-3.project_name(derived)
-The name of the project. This should meet the following parameters to be classified a project name
-1.(project_commence date)_(firstname_of_the_client)
-This should be the PRIMARY KEY when storing to the database
-
-4.project_genre_source
-Can be categorized based on the source of work, typically:The user should be able to amend the list by add/subtracting
-1.Online 
-2.Physical client
-3.Competition
-
-5.project_genre_type
-Can be further categorized 
+**Builth With**
+- Python
+- mysql
+- sqlalchemy
 
 
-## Database 
-### 1. project_details
-1. project_name(PRIMARY KEY)
-2. client_name
-3. project_category
-4. project_source
-5. project_scope
-6. date_commencement
-7. date_completion
+<PROJECT-SETUP>
 
-### 2. project_funds
-1. project_name
-2. project_doneby (PRIMARY KEY)
-3. project_fund
-4. company_fund
-5. userA_income
-6. userB_income
-7. userC_income
-
-### updating the projects listed
-
-### OBJ 02. Recording company fund
-Note that the abbreviation :
-1. co stands for company
-2. exp stands for expenditures
-
-### co_fund_type
-1. income
-2. expenditure
-
-### co-income (company fund)
-This is funds made from :
-1. all projects payed
-   filter the mode of payment
-   1.1 KSH
-   1.2 DOLLARS
-2. Loans re-payed
-2. exchange rate
-
-### co-exp (company expenditures)
-This is what is being subtracted from the formode fund.These are:
-1. Salaries
-2. r_cost (running cost)
-3. Loan
-
-### co-exp-salaries (company expenditures salaries)
-The salaries are based on the performance/the effort and amount of work handled by the employee
-1. employee A
-2. employee B
-3. employee C
-
-### co-exp-loans (company expenditures loans/welfare support)
-1. employee A
-2. employee B
-3. employee C
-
-### co-exp-cost (The running cost)
-1. electricity
-2. rent
-3. others
+<h1 id="projo">Project Setup</h1>
 
 
-### co-net-funds
-The remaining balance after expenditures have been subtracted
-for that particular month
+## Hardware Requirements
+- You will need a desktop or a laptop computer.
+- RAM: A minimum of 4GB RAM is recommended.
+- Disk Space: You should have at least 5GB free of space on your working hard drive.
 
-#### Parameters
-1.date_expenditure
-2.category of income
-3.category of expenditure
-2.expenditure fund
-3.income fund
-3.sub_category of expenditure
-4.Net income
+## Software Requirements
 
-#### Database
-record all the parameters
+**environment**
 
+The project was developed in (wsl2 ubuntu environment) .
 
+**Prerequisites**
 
-
-### OBJ 03. Recording project fund distribution
+To get this project up and running locally, you must already have the following installed:
+- [python plus the necessary packages installed on your computer](https://www.python.org/downloads/)
+- [code editor ](https://code.visualstudio.com/)
+- [mysql workbench](https://dev.mysql.com/downloads/workbench/)
+- [mysql server installed on your terminal](https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-database)
 
 
-## the employee tab
-The new dispensation of beteer is 50 % from 1000 projects than 100% from 100 projects
-Let's build/systems/infastructure that scales beyond us
+**simple steps to set up on your local machine**
 
-working on the employee tab
-
-
-## update on the currency,
- we need to update the currency from reading 100 to 110.
- 
+- git clone ```https://github.com/symonkipkemei/fmd-repo.git ```
+- Load mysql schema on your database using mysql workbench, (in the schema directory)
+- set up your root/database password as virtual environment variable
+- set up and activate the virtual environment.
+- install dependencies ``` pip install -r requirements.txt```
+- Run on terminal main.py
 
 
- ## feature updates
- 1. Distribution funds  to (waleed_effect)
- 2. Change other income table to employee table
- 3. Replace employee tag on project_bee to name of employee
+<ILLUSTRATIONS>
 
- # salaries_table
- This table is going to host the respective pays for each individual per project.
- 
+<h1 id="illus">Illustrations</h1>
+
+![problem-statement-1](img/ps-02.JPG)
+
+
+<PROJECT-INFORMATION>
+
+<h1 id="info">Project Information</h1>
+
+**Project Status**
+- Complete
+
+**features**
+- a receipt validator, for ease of filing taxes
+- online platform that can interact with the user( built on django)
+- usd/kes that can easily adapt to the rates.
+- Your suggestions 😊............
+
+<CONTRIBUTING>
+
+<h1 id="contri">🤝 Contributing</h1>
+
+Contributions, issues and feature requests are always welcome!
+
+I love meeting other developers, interacting and sharing.
+
+Feel free to check the [issues page](https://github.com/symonkipkemei/fmd-repo/issues).
+
+**How to Contribute**
+
+To get a local copy up and running follow these simple example steps.
+
+```
+- Fork the repository
+- git clone https://github.com/your_username/fmd-repo
+- git checkout develop
+- git checkout -b branch name
+- git remote add upstream https://github.com/symonkipkemei/fmd-repo
+- git pull upstream develop
+- git commit -m "commit message"
+- git push -u origin HEAD
+```
+
+
+<ACKNOWLEDGMENTS>
+
+<h1 id="know">Acknowledgements</h1>
+
+## Author
+
+👤 **Symon Kipkemei**
+
+- Github: [symonkipkemei](https://github.com/symonkipkemei)
+- Twitter: [@symon_kipkemei](https://twitter.com/symon_kipkemei)
+- LinkedIn: [Symon kipkemei](https://www.linkedin.com/in/symon-kipkemei/)
+
+
+## Show your support
+
+
+I can't promise to solve all your problems but I promise you won't have 
+to face them alone 😊.
+
+Finally, if you've read this far, don't forget to give this repo a ⭐️. 
+
+
+## Acknowledgments
+
+- [codingnomads](https://codingnomads.co/).
+- [sqlalchemy documentation](https://www.sqlalchemy.org/)
 

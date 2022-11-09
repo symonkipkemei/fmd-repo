@@ -287,5 +287,3 @@ if __name__ == "__main__":
     net_company_fund()
 
 
-    
-
