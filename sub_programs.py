@@ -7,38 +7,33 @@ from connect import metadata
 
 import algos
 
-import tables.project_category as project_category 
-
-import tables.project_source as project_source
-import tables.project_status as project_status
-import tables.scope as scope
-import tables.project as project
-import tables.project_scope as project_scope
-import tables.project_fund as project_fund
-import tables.project_bees as project_bees
-import tables.pay as pay
-import tables.bees as bees
-
-
-import fund_table.co_account as co_account
-import fund_table.co_company as co_company
-import fund_table.co_fund as co_fund
-import fund_table.co_loans as co_loans
-import fund_table.co_loans_type as co_loans_type
-import fund_table.co_loans
-import fund_table.co_operations as co_operations
-import fund_table.co_salaries as co_salaries
-import fund_table.co_transaction as co_transaction
-import fund_table.co_transtatus as co_transtatus_id
-import fund_table.co_operations_type as co_operations_type
+import tables_project.project_category as project_category 
+import tables_project.project_source as project_source
+import tables_project.project_status as project_status
+import tables_project.scope as scope
+import tables_project.project as project
+import tables_project.project_scope as project_scope
+import tables_project.project_fund as project_fund
+import tables_project.project_bees as project_bees
+import tables_project.pay as pay
+import tables_project.bees as bees
 
 
+import tables_transaction.co_account as co_account
+import tables_transaction.co_company as co_company
+import tables_transaction.co_fund as co_fund
+import tables_transaction.co_loans as co_loans
+import tables_transaction.co_loans_type as co_loans_type
+import tables_transaction.co_loans
+import tables_transaction.co_operations as co_operations
+import tables_transaction.co_salaries as co_salaries
+import tables_transaction.co_transaction as co_transaction
+import tables_transaction.co_transtatus as co_transtatus_id
+import tables_transaction.co_operations_type as co_operations_type
 
 
 st = s.Table("project", metadata, autoload=True, autoload_with=engine) #selected table
 ps = s.Table("project_scope", metadata, autoload=True, autoload_with=engine) #project_scope
-
-
 
 
 def insert_project_data():
@@ -91,12 +86,13 @@ def insert_project_data():
         project_bees.insert_table(PROJECT_ID)
 
         # show them salaries to be distributed.
-        salaries = project_fund.select_salaries(PROJECT_ID)
+        pj_fund, company, salaries = project_fund.retrieve_project_company_salaries_fund(PROJECT_ID)
+
+        print(f"SALARY TO BE DISTRIBUTED : {salaries}")
 
         # pay the active bees
         pay.insert_table(PROJECT_ID,salaries)
     
-
 def insert_transaction_data():
     #account_id
     co_account_id = co_account.display_table("account_id")
@@ -114,9 +110,22 @@ def insert_transaction_data():
             if co_operations_type_id == 1: #project_fund
                 co_transtatus_id = 1
                 co_operation_id = co_operations.display_table("co_operations",co_operations_type_id,co_company_id)
-                money_in = algos.money_setup("Money in")
-                date_of_transaction = algos.date_setup("date of transaction")
-                co_transaction_id =co_transaction.insert_table_operations_money_in(co_account_id,co_operation_id,co_transtatus_id,money_in,date_of_transaction)
+
+                if co_operation_id == 2: #if a virtual project, store er and  project_income at the same time.
+                    date_of_transaction = algos.date_setup("date of transaction")
+                    project_income, er_income = algos.dollars_to_ksh()
+                    # project_income
+                    co_transaction_id =co_transaction.insert_table_operations_money_in(co_account_id,co_operation_id,co_transtatus_id,project_income,date_of_transaction)
+
+                    #er_income
+                    co_operation_id = 3
+                    co_transaction_id =co_transaction.insert_table_operations_money_in(co_account_id,co_operation_id,co_transtatus_id,er_income,date_of_transaction)
+
+                else:
+                    money_in = algos.money_setup("Money in")
+                    date_of_transaction = algos.date_setup("date of transaction")
+                    co_transaction_id =co_transaction.insert_table_operations_money_in(co_account_id,co_operation_id,co_transtatus_id,money_in,date_of_transaction)
+                
 
             elif co_operations_type_id == 2: #running_cost
                 co_transtatus_id = 2
@@ -166,9 +175,11 @@ def insert_transaction_data():
     else:
         print("error")
         
+def bee_status():
+    print("\n***************BEE FINANCIAL STATS*****************")
 
+    bee_no = bees.display_table("bees")
 
-def bee_status(bee_no):
     print("***********************SALARIES***********************")
     # Establish all the projects done
     salaries_total = pay.salaries_total(bee_no)
@@ -194,23 +205,18 @@ def bee_status(bee_no):
     net_income = salaries_remainder - loans_remainder
     print(f"{net_income}")
 
-
 def project_calculator():
 
     print()
     print(f"project calculator")
     print("***************************************************")
     project_source_id = project_source.display_table("project_source")
-    if project_source_id == 2:
-        project_fund = algos.project_fund("project fund",usd=False)
-    else:
-        project_fund = algos.project_fund("project fund")
-
+    project_fund = algos.project_fund("project fund",project_source_id)
+    
     algos.display_fee_distribution(project_source_id,project_fund,timeline=False)
 
     print("***************************************************")
 
-    
 def mark_active_projects():
 
     print("************ACTIVE PROJECTS**********")
@@ -253,11 +259,32 @@ def mark_active_projects():
             #close project
             project.update_status(project_id,project_status_id,date_of_completion)
 
+def net_company_fund():
+    print("COMPANY REVENUE INCOME")
+    # establish all the company fund recieved
+    print("***************************************************")
+    total_company_fund = project_fund.company_fund_total()
+
+    total_er_income = co_transaction.select_total_er_income()
+
+    print("***************************************************")
+    
+    print("\nCOMPANY REVENUE EXPENDITURE")
+    # establish all the running cost
+    total_running_cost = co_transaction.select_total_running_cost()
+
+    print("***************************************************")
+    returns = (total_company_fund + total_er_income) - (total_running_cost)
+
+    print(f"NET INCOME: {returns}")
+
+
  
 if __name__ == "__main__":
     pass
     #bee_status(2)
     #insert_transaction_data()
+    net_company_fund()
 
 
     

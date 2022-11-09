@@ -1,6 +1,5 @@
 
-import csv
-from curses.ascii import isdigit
+
 from datetime import date
 
 #_____________________________________________________________________________________________________________#
@@ -59,6 +58,7 @@ def datetime_enforcer(description: str, lower_limit:int,upper_limit:int)-> int:
         print("Try again")
     return custom_date
 
+
 def date_setup(date_purpose:str)-> str:
     """Set up the string format for a date
 
@@ -101,159 +101,26 @@ def date_setup(date_purpose:str)-> str:
     return current_date
 
 
-
 ## project fund algos
 #_____________________________________________________________________________________________________________#
 
 def money_setup(money_purpose):
     """Records all transactions done in kenya shillings"""
     print()
-    print(f"{money_purpose}")
+    print(f"{money_purpose} (ksh)")
     print("***************************************************")
     amount = float(input("Amount:"))
     print("***************************************************")
     return amount
 
 
-def project_fund(money_purpose, usd = True):
-    """All project funds are recorded in usd
-
-    Args:
-        money_purpose (_type_): description of money type
-        usd (bool, optional): if not true amount is converted from ksh to usd. Defaults to True.
-
-    Returns:
-        _type_: amount to be recorderd in usd
-    """
-    print()
-    print(f"{money_purpose}")
-    print("***************************************************")
-    amount = float(input("Amount:"))
-    print("***************************************************")
-    if not usd:
-        exchange_rate = 110
-        amount = round(amount/exchange_rate)
-    return amount
-
-
-def project_funds_distribution_V2(project_source_id, project_fund):
-    # client_fee (is the projectFund aggreed between the sellar and buyer)
-    # real_fee ( fee visible to the world)
-    # optical_fee (fee visible only by directors) 
-    # distribution_factor ( factor that controls the amount of real_fee and optical fee)
-    # formode_tax (amount the company makes for facilitating business)
-    # fiverr_tax (amount fiverr deducts as profits)
-    # project_bee_salary(amount payable to the project bee)
-
-    # company_fund ( sum of formode_tax_o + formode_tax-r)
-    # tax ( fiverr_tax_o + fiverr_tax_r)
-    # symon_income ( director 1)
-    # brian_income ( director 2)
-    # other_income  (employee)
-
-    if project_source_id == 1: #fiverr
-        client_fee = float(project_fund)
-        distribution_factor = (2/3) # distribution to reality
-        real_fee = distribution_factor * client_fee
-        
-        # real_fee should always be a whole number rounded to 0 or 5 to make it convincing
-        base = 5
-        real_fee = base * round(real_fee /5)
-
-        # optical illusion achieved
-        optical_fee = client_fee - real_fee
-        fiverr_tax_o = 0.2 * optical_fee
-        formode_tax_o = optical_fee - fiverr_tax_o
-
-        # back to reality
-        fiverr_tax_r = 0.2 * real_fee
-        project_bee_salary =round(0.7 * real_fee)
-        formode_tax_r = ( real_fee - ( fiverr_tax_r + project_bee_salary))
-
-        company_fund = formode_tax_o + formode_tax_r
-        salaries = project_bee_salary
-        tax = fiverr_tax_o + fiverr_tax_r
-
-        # consultancies
-        consultancies = 0
-
-        funds = (company_fund,consultancies, salaries, tax, real_fee,formode_tax_r,fiverr_tax_r)
-        
-    elif project_source_id == 2: #physical
-        client_fee = project_fund
-        distribution_factor = (2/3) # distribution to reality
-        real_fee = distribution_factor * client_fee
-        
-        # real_fee should always be a whole number rounded to 0 or 5 to make it convincing
-        base = 5
-        real_fee = base * round(real_fee /5)
-
-
-        # optical illusion achieved
-        optical_fee = client_fee - real_fee
-        tax_charge = 0
-        physical_tax_o = tax_charge * optical_fee
-        formode_tax_o = optical_fee - physical_tax_o
-
-        # back to reality
-        # percentage of tax/100
-        visible_tax = 0
-        # amount of tax
-        physical_tax_r = visible_tax * real_fee
-        formode_tax_r = round(0.1 * real_fee)
-        project_bee_salary = ( real_fee - ( formode_tax_r + physical_tax_r))
-
-
-        company_fund = formode_tax_o + formode_tax_r
-        salaries = project_bee_salary
-        tax = physical_tax_o + physical_tax_r
-
-        # consultancies
-        consultancies = 0
-
-        funds = (company_fund, consultancies, salaries, tax,real_fee,formode_tax_r,physical_tax_r)
-
-    elif project_source_id == 3: #competition
-        print("Gopillar projects yet to be factored")
-    
-    elif project_source_id == 5: #paypal
-        client_fee = project_fund
-        distribution_factor = (2/3) # distribution to reality
-        real_fee = distribution_factor * client_fee
-        
-        # real_fee should always be a whole number rounded to 0 or 5 to make it convincing
-        base = 5
-        real_fee = base * round(real_fee /5)
-
-        # optical illusion achieved
-        optical_fee = client_fee - real_fee
-        paypal_tax_o = 0.05 * optical_fee
-        formode_tax_o = optical_fee - paypal_tax_o
-
-        # back to reality
-        paypal_tax_r = 0.05 * real_fee
-        project_bee_salary =round(0.85 * real_fee)
-        formode_tax_r = ( real_fee - ( paypal_tax_r + project_bee_salary))
-
-        company_fund = formode_tax_o + formode_tax_r
-        salaries = project_bee_salary
-        tax = paypal_tax_o + paypal_tax_r
-
-        # consultancies
-        consultancies = 0
-
-        funds = (company_fund,consultancies, salaries, tax,real_fee,formode_tax_r,paypal_tax_r)
-
-    else:
-        print("projects fund yet to be included")
-
-    return funds
-
-
-def dollars_ksh():
+def dollars_to_ksh():
     # establish amount of dollars withdrawn
+    print("***************************************************")
     dollars_withdrawn = float(input("insert amount withdrawn (dollars):"))
     amount_recieved = float(input("insert amount recieved (ksh):"))
+
+    print("***************************************************")
 
     # establish an exchange rate fee a constant used for the project
     #anything above this becomes company's profit
@@ -264,9 +131,37 @@ def dollars_ksh():
     project_amount = dollars_withdrawn * rate
     er_income = amount_recieved - project_amount
 
-    money = (project_amount, er_income)
+    return project_amount, er_income
 
-    return money
+
+
+def project_fund(money_purpose,project_source_id):
+    """All project funds are recorded in usd
+
+    Args:
+        money_purpose (_type_): description of money type
+        usd (bool, optional): if not true amount is converted from ksh to usd. Defaults to True.
+
+    Returns:
+        _type_: amount to be recorderd in usd
+    """
+    if project_source_id == 2:
+        print()
+        print(f"{money_purpose} (ksh)")
+        print("***************************************************")
+        amount = float(input("Amount:"))
+        print("***************************************************")
+   
+        exchange_rate = 110
+        amount = round(amount/exchange_rate)
+
+    else:
+        print()
+        print(f"{money_purpose} (usd)")
+        print("***************************************************")
+        amount = float(input("Amount:"))
+        print("***************************************************")
+    return amount
 
 
 
@@ -285,7 +180,7 @@ def gender_type():
     return gender_dict[user_input]
 
 
-#pay algos
+#project fund distribution
 #_____________________________________________________________________________________________________________#
 
 def salaries_matrix(salary, bees_no_dict: dict):
@@ -309,7 +204,7 @@ def display_fee_distribution(project_source_id,project_fund,timeline = True):
     project_bounty,formode_fee,tax,salaries = project_funds_distribution_V3(project_source_id,project_fund,optical_illusion=True)
 
     print()
-    print(f"Fee distribution")
+    print(f"Fee distribution (usd)")
     print("***************************************************")
     print(f"project bounty : {project_bounty}")
     print(f"tax : {tax}")
@@ -393,3 +288,6 @@ def project_funds_distribution_V3(project_source_id, project_fund,optical_illusi
         package = (company_fund,salaries,tax)
 
     return package
+
+
+

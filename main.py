@@ -20,11 +20,11 @@ def main():
                                                                                                
         """)
         print("*******FORMODE REPOSITORY**************")
-        print("1) Add project to database\n"
-              "2) Check earnings\n"
+        print("1) Add project data\n"
+              "2) Bee Financial stats\n"
               "3) Completed projects\n"
               "4) Active projects\n"
-              "5) Formode Fund\n"
+              "5) Add transaction data\n"
               "6) Net fund\n"
               "7) Project calculator\n"
               "0) Quit")
@@ -32,26 +32,25 @@ def main():
         user_selection = int(input("insert option: "))
 
         if user_selection == 1:
-            sp.add_project_to_database()
+            sp.insert_project_data()
         # check earnings
         elif user_selection == 2:
-           print("In progress")
+           sp.bee_status()
         # view complete projects
         elif user_selection == 3:
             print("In progress")
         # view active projects
         elif user_selection == 4:
-            sp.update_project_data()
+            sp.mark_active_projects()
         # formode fund
         elif user_selection == 5:
-            print("In progress")
+            sp.insert_transaction_data()
         # settings
         elif user_selection == 6:
-            print("In progress")
+            sp.net_company_fund()
 
         elif user_selection == 7:
             sp.project_calculator()
-            
             
         # Quit
         elif user_selection == 0:
