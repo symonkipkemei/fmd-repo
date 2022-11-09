@@ -1,456 +1,289 @@
-from parameters import client_name
-from parameters import project_setup
-from parameters import project_setup_cooperation
-from parameters import project_date
-from parameters import project_name
-from parameters import project_funds
-from parameters import project_funds_distribution_V2
-from parameters import time_id
-from parameters import salaries_matrix
-from parameters import dollars_ksh
 
-from database.database_create_alter_tables import *
-from database.database_delete_from_tables import *
-from database.database_select_from_tables import *
-from database.database_update_insert_into_tables import*
+from select import select
+import sqlalchemy as s
+from connect import engine
+from connect import connection
+from connect import metadata
 
-import csv
+import algos
 
-def add_project_to_database():
-    """adding project to database"""
-    # Collecting the parameters
+import tables_project.project_category as project_category 
+import tables_project.project_source as project_source
+import tables_project.project_status as project_status
+import tables_project.scope as scope
+import tables_project.project as project
+import tables_project.project_scope as project_scope
+import tables_project.project_fund as project_fund
+import tables_project.project_bees as project_bees
+import tables_project.pay as pay
+import tables_project.bees as bees
 
-    # project category
-    name_client = client_name()
 
-    # project category
-    filename = "files/project_category.csv"
-    filetype = "project category"
-    project_category = project_setup(filename, filetype)
+import tables_transaction.co_account as co_account
+import tables_transaction.co_company as co_company
+import tables_transaction.co_fund as co_fund
+import tables_transaction.co_loans as co_loans
+import tables_transaction.co_loans_type as co_loans_type
+import tables_transaction.co_loans
+import tables_transaction.co_operations as co_operations
+import tables_transaction.co_salaries as co_salaries
+import tables_transaction.co_transaction as co_transaction
+import tables_transaction.co_transtatus as co_transtatus_id
+import tables_transaction.co_operations_type as co_operations_type
 
-    # project source
-    filename = "files/project_source.csv"
-    filetype = "project source"
-    project_source = project_setup(filename, filetype)
 
-    # project scope
-    filename = "files/project_scope.csv"
-    filetype = "project scope"
-    project_scope = project_setup(filename, filetype)
+st = s.Table("project", metadata, autoload=True, autoload_with=engine) #selected table
+ps = s.Table("project_scope", metadata, autoload=True, autoload_with=engine) #project_scope
 
-    # project commencement date
-    print("\n****PROJECT DATE COMMENCEMENT*****")
-    date_commencement = project_date()
 
-    # project status
-    filename = "files/project_status.csv"
-    filetype = "project status"
-    project_status = project_setup(filename, filetype)
+def insert_project_data():
 
-    if project_status == "COMPLETE":
-        # project completion date
-        print("\n****PROJECT DATE COMPLETION*****")
-        date_completion = project_date()
+    #ensure the ids are intandem with the database for it to work
+    # PROJECT STATUS ID
+    ACTIVE_ID = 1
+    COMPLETE_ID = 2
+    CANCELLED_ID = 3
 
-        # project fund
-        project_fund = project_funds()
+    CLIENT_NAME = algos.client_name()
+    DATE_COMMENCMENT = algos.date_setup("date of commencment")
 
-        # project user
-        filename = "files/project_done_by.csv"
-        filetype = "project bee"
-        project_user = project_setup(filename, filetype)
+    #extract the category name in order to create the project name
+    return_value = project_category.display_table("project_category")
+    PROJECT_CATEGORY_ID = return_value[0]
+    PROJECT_CATEGORY = str.lower(return_value[1])
 
-    else:
-        if project_source == "PHYSICAL":
-            print ("\n***funds in ksh****")
-            project_fund = project_funds()
-            exchange_rate = 110
-            project_fund = round(project_fund/exchange_rate)
-        else:
-            project_fund = project_funds()
+    PROJECT_NAME = algos.project_name(DATE_COMMENCMENT,CLIENT_NAME,PROJECT_CATEGORY)
+    PROJECT_SOURCE_ID = project_source.display_table("project_source")
+    PROJECT_STATUS_ID = project_status.display_table("project_status")
 
-        date_completion = None
-        project_user = "FORMODE"
+     # ADD PROJECT FUND
+    PROJECT_FUND_ID =project_fund.insert_table(PROJECT_SOURCE_ID)
 
-        director_1 = 0
-        director_2 = 0
-        employee_3 = 0
-        employee_4 = 0
-        employee_5 = 0
-        employee_6 = 0
-        employee_7 = 0
+
+    if PROJECT_STATUS_ID == ACTIVE_ID:
+        # ADD PROJECT TABLE
+        project.insert_table(CLIENT_NAME,DATE_COMMENCMENT,PROJECT_CATEGORY_ID,PROJECT_NAME,PROJECT_SOURCE_ID,PROJECT_STATUS_ID,PROJECT_FUND_ID,date_completion=False)
+        
+        # retirieve project id
+        PROJECT_ID = project.retrieve_project_id()
+
+        # ADD PROJECT SCOPE
+        project_scope.insert_table(PROJECT_ID)
 
     
-    # project name ( project key/unique identifier)
-    name_project = project_name(date_commencement, name_client, str.lower(project_category))
+    elif PROJECT_STATUS_ID == COMPLETE_ID:
 
-    # project funds
-    company_fund, salaries, tax = project_funds_distribution_V2(project_source, project_fund)
+        # ADD PROJECT TABLE + DATE COMPLETION
+        project.insert_table(CLIENT_NAME,DATE_COMMENCMENT,PROJECT_CATEGORY_ID,PROJECT_NAME,PROJECT_SOURCE_ID,PROJECT_STATUS_ID,PROJECT_FUND_ID,date_completion=True)
 
-    # feeding into project_details table
-    insert_project_details_table(name_client, project_category, project_source, project_scope,
-                                 date_commencement,
-                                 date_completion, name_project, project_status)
-    # feeding into project_funds table                           
-    insert_project_funds_table(name_project, project_fund, company_fund, salaries, tax)
+        # retirieve project id
+        PROJECT_ID = project.retrieve_project_id()
+
+        # ADD PROJECT SCOPE
+        project_scope.insert_table(PROJECT_ID)
+
+        # ADD FUND BEES ( BEES WHO DID THE WORK)
+        project_bees.insert_table(PROJECT_ID)
+
+        # show them salaries to be distributed.
+        pj_fund, company, salaries = project_fund.retrieve_project_company_salaries_fund(PROJECT_ID)
+
+        print(f"SALARY TO BE DISTRIBUTED : {salaries}")
+
+        # pay the active bees
+        pay.insert_table(PROJECT_ID,salaries)
+    
+def insert_transaction_data():
+    #account_id
+    co_account_id = co_account.display_table("account_id")
+
+    # co_fund
+    co_fund_id = co_fund.display_table("co_fund")
+    #company_fund or salaries_fund
+    if co_fund_id == 1: 
+        co_company_id = co_company.display_table("co_company")
+        print("complete")
+        #operations or loan_allocation
+        if co_company_id == 1:#operations
+            #project_fund or running_cost
+            co_operations_type_id = co_operations_type.display_table("operation_type")
+            if co_operations_type_id == 1: #project_fund
+                co_transtatus_id = 1
+                co_operation_id = co_operations.display_table("co_operations",co_operations_type_id,co_company_id)
+
+                if co_operation_id == 2: #if a virtual project, store er and  project_income at the same time.
+                    date_of_transaction = algos.date_setup("date of transaction")
+                    project_income, er_income = algos.dollars_to_ksh()
+                    # project_income
+                    co_transaction_id =co_transaction.insert_table_operations_money_in(co_account_id,co_operation_id,co_transtatus_id,project_income,date_of_transaction)
+
+                    #er_income
+                    co_operation_id = 3
+                    co_transaction_id =co_transaction.insert_table_operations_money_in(co_account_id,co_operation_id,co_transtatus_id,er_income,date_of_transaction)
+
+                else:
+                    money_in = algos.money_setup("Money in")
+                    date_of_transaction = algos.date_setup("date of transaction")
+                    co_transaction_id =co_transaction.insert_table_operations_money_in(co_account_id,co_operation_id,co_transtatus_id,money_in,date_of_transaction)
+                
+
+            elif co_operations_type_id == 2: #running_cost
+                co_transtatus_id = 2
+                co_operation_id = co_operations.display_table("co_operations",co_operations_type_id,co_company_id)
+                money_out = algos.money_setup("Money out")
+                date_of_transaction = algos.date_setup("date of transaction")
+                co_transaction_id =co_transaction.insert_table_operations_money_out(co_account_id,co_operation_id,co_transtatus_id,money_out,date_of_transaction)
+
+            else:
+                print("I need an update")
+
+        elif co_company_id == 2:#loans
+            #loan_issued or loans_repayed
+        
+            co_loan_type_id = co_loans_type.display_table("co_loan_type")
+
+            if co_loan_type_id == 1:
+                co_transtatus_id = 2
+                bee_no = bees.display_table("bees")
+                co_loans.insert_table(co_company_id,bee_no,co_loan_type_id)
+                co_loans_id = co_loans.retrieve_co_loans_id()
+                money_out = algos.money_setup("Money out")
+                date_of_transaction = algos.date_setup("date of transaction")
+
+                co_transaction_id =co_transaction.insert_table_loans_money_out(co_account_id,co_loans_id,co_transtatus_id,money_out,date_of_transaction)
+
+            elif co_loan_type_id == 2:
+                co_transtatus_id = 1
+                bee_no = bees.display_table("bees")
+                co_loans.insert_table(co_company_id,bee_no,co_loan_type_id)
+                co_loans_id = co_loans.retrieve_co_loans_id()
+                money_in = algos.money_setup("Money in")
+                date_of_transaction = algos.date_setup("date of transaction")
+                co_transaction_id =co_transaction.insert_table_loans_money_in(co_account_id,co_loans_id,co_transtatus_id,money_in,date_of_transaction)
+
+        else:
+            print("I need an update")
+
+    elif co_fund_id == 2:
+        co_transtatus_id = 2
+        bee_no = bees.display_table("bees")
+        co_salaries.insert_table(co_fund_id,bee_no)
+        co_salaries_id = co_salaries.retrieve_salaries_id()
+        money_out = algos.money_setup("Money out")
+        date_of_transaction = algos.date_setup("date of transaction")
+        co_transaction.insert_table_salaries_money_out(co_account_id,co_salaries_id,co_transtatus_id,money_out,date_of_transaction)
+    else:
+        print("error")
+        
+def bee_status():
+    print("\n***************BEE FINANCIAL STATS*****************")
+
+    bee_no = bees.display_table("bees")
+
+    print("***********************SALARIES***********************")
+    # Establish all the projects done
+    salaries_total = pay.salaries_total(bee_no)
+    # Establish all the projects payed
+    salaries_payed = co_transaction.salaries_payed(bee_no)
+    salaries_remainder = salaries_total - salaries_payed
+    print("******************************************************")
+    print(f"Unpayed Salaries: {salaries_remainder}")
+    print()
 
 
-    # feeding into project_funds table   
-    insert_salaries_funds_table(name_project, project_user, director_1, director_2, employee_3, employee_4, employee_5, employee_6, employee_7)
+    print("***********************LOANS***********************")
+    # Establish all the projects done
+    loans_issued = co_transaction.loans_issued(bee_no)
+    # Establish all the projects payed
+    loans_repayed = co_transaction.loans_repayed(bee_no)
+    loans_remainder = loans_issued - loans_repayed
+    print("***************************************************")
+    print(f"Unpayed Salaries: {loans_remainder}")
 
+    print()
+    print("***********************NET INCOME***********************")
+    net_income = salaries_remainder - loans_remainder
+    print(f"{net_income}")
 
-def view_active_projects():
+def project_calculator():
+
+    print()
+    print(f"project calculator")
+    print("***************************************************")
+    project_source_id = project_source.display_table("project_source")
+    project_fund = algos.project_fund("project fund",project_source_id)
+    
+    algos.display_fee_distribution(project_source_id,project_fund,timeline=False)
+
+    print("***************************************************")
+
+def mark_active_projects():
 
     print("************ACTIVE PROJECTS**********")
     print("1. View project Quote\n2. Mark project Complete")
     print("************************************")
     user_input = int(input("insert option: "))
 
-    if user_input == 1:
-        option = active_projects()
-        if option == 0:
-            return None
-        else:
-            retrieve_project_quote(option)
+    project_id = project.active_projects()
+    project_source_id = project_source.retrieve_project_source_id(project_id)
+    fund_project, fund_company, fund_salary = project_fund.retrieve_project_company_salaries_fund(project_id)
 
+    if user_input == 1:
+        algos.display_fee_distribution(project_source_id,fund_project,timeline=True)
+     
+    
     elif user_input == 2:
-        option = active_projects()
-        if option == 0:
+        if project_id == 0:
             return None
         else:
             # project completion date
-            print("\n****PROJECT DATE COMPLETION*****")
-            date_completion = project_date()
+            project_status_id = 2 #from active to complete
+            date_of_completion = algos.date_setup("date of completion")
+            
+            # refresh project fund
+            project_fund_id = project_fund.update_table(project_source_id,project_id)
+        
+            # retreive new salary
+            fund_project_new, fund_company_new, fund_salary_new = project_fund.retrieve_project_company_salaries_fund(project_id)
 
-            project_source = retrieve_source_user(option)
-            # project fund
+            # ADD FUND BEES ( BEES WHO DID THE WORK)
+            project_bees.insert_table(project_id)
 
+
+            # display salary
+            print(f"SALARY TO BE DISTRIBUTED : {fund_salary_new}")
+
+             # pay the active bees
+            pay.insert_table(project_id,fund_salary_new)
+
+            #close project
+            project.update_status(project_id,project_status_id,date_of_completion)
+
+def net_company_fund():
+    print("COMPANY REVENUE INCOME")
+    # establish all the company fund recieved
+    print("***************************************************")
+    total_company_fund = project_fund.company_fund_total()
+
+    total_er_income = co_transaction.select_total_er_income()
+
+    print("***************************************************")
     
-            if project_source == "PHYSICAL":
-                print ("\n***funds in ksh****")
-                project_fund = project_funds()
-                exchange_rate = 110
-                project_fund = round(project_fund/exchange_rate)
-            else:
-                project_fund = project_funds()
-                
-            
-            company_fund, salaries, tax = project_funds_distribution_V2(project_source, project_fund)
+    print("\nCOMPANY REVENUE EXPENDITURE")
+    # establish all the running cost
+    total_running_cost = co_transaction.select_total_running_cost()
 
-            # update the database on the project details
-            update_project_details_table(date_completion, option)
+    print("***************************************************")
+    returns = (total_company_fund + total_er_income) - (total_running_cost)
 
-            # update the project funds details
-            update_project_funds_table(option,project_fund,company_fund,salaries,tax)
-
-            # project user
-            print("\n*********PROJECT BEE TYPE*********")
-            print(" 1. Single Bee\n 2. Colony of bees")
-
-            user_input = int(input("insert option above: "))
+    print(f"NET INCOME: {returns}")
 
 
-            filename = "files/project_done_by.csv"
-            filetype = "project bee"
-
-            if user_input == 1:
-                project_user = project_setup(filename, filetype)
-                # check the index of the name in csv file(project _doneby) if it matches with the name picked
-                director_1 = 0
-                director_2 = 0
-                employee_3 = 0
-                employee_4 = 0
-                employee_5 = 0
-                employee_6 = 0
-                employee_7 = 0
-
-                #if indecise match, then you've identified the righht person, pay him/her salary
-                with open(filename, "r") as f:
-
-                    iterable = csv.reader(f)
-                    list_iterable = list(iterable)
-                    for x in list_iterable:
-                        if x[1] == project_user:
-                            bee_code = int(x[0])
-                            if bee_code == 1:
-                               director_1 = salaries
-                            elif bee_code == 2:
-                               director_2 = salaries
-                            elif bee_code == 3:
-                               employee_3 = salaries
-                            elif bee_code == 4:
-                               employee_4 = salaries
-                            elif bee_code == 5:
-                               employee_5 = salaries
-                            elif bee_code == 6:
-                               employee_6 = salaries
-                            elif bee_code == 7:
-                                employee_7 = salaries
-                            else:
-                                print("new employer detected, kindly update his/her database.")
-                # update salaries table in the database
-                update_salaries_table(option,project_user,director_1,director_2,employee_3,employee_4,employee_5,employee_6,employee_7)
-
-            elif user_input == 2:
-                project_user = "COOPERATE"
-                bees_index = project_setup_cooperation(filename, filetype)
-                salaries_distribution = salaries_matrix(filename,salaries,bees_index)
-
-                director_1 = 0
-                director_2 = 0
-                employee_3 = 0
-                employee_4 = 0
-                employee_5 = 0
-                employee_6 = 0
-                employee_7 = 0
-
-            
-                # loop through the salaries distribution and allocate appropiately
-
-                for x in salaries_distribution:            
-                    if x == 1:
-                        director_1 = salaries_distribution[x]
-                    elif x == 2:
-                        director_2 = salaries_distribution[x]
-                    elif x == 3:
-                        employee_3 = salaries_distribution[x]
-                    elif x == 4:
-                        employee_4 = salaries_distribution[x]
-                    elif x == 5:
-                        employee_5 = salaries_distribution[x]
-                    elif x == 6:
-                        employee_6 = salaries_distribution[x]
-                    elif x == 7:
-                        employee_7 = salaries_distribution[x]
-                    else:
-                        print("Employee records not yet updated in the database.")
-
-                # update salaries table in the database
-                update_salaries_table(option,project_user,director_1,director_2,employee_3,employee_4,employee_5,employee_6,employee_7)
-
-def add_to_pesafunds():
-    """This section controls how the company funds are distributed and used """
-    # primary key
-    time_key = time_id()
-
-    # date of funding
-    print("\n********DATE OF TRANSACTION****** ")
-    funds_date = project_date()
-
-    # co_fund_type
-    filename = "files/co_fund_type.csv"
-    filetype = "company Fund type"
-    co_fund_type = project_setup(filename, filetype)
-
-    # parameters
-    co_sub_type = ""
-    typology = ""
-    currency = ""
-    amount = 0
-    er_income = 0
-
-    # ****************INCOME******************
-    if co_fund_type == "INCOME":
-        # co_sub_type (income)
-        filename = "files/co_income_type.csv"
-        filetype = "company Income type"
-        co_sub_type = project_setup(filename, filetype)
-
-        # currency type
-        filename = "files/currency.csv"
-        filetype = "Type of currency"
-        currency = project_setup(filename, filetype)
-
-        if currency == "KSH":
-            # Amount of income
-            print(f"\n**** AMOUNT OF INCOME({currency})*****")
-            amount = int(input("insert project income:"))
-            er_income = 0
-
-        elif currency == "DOLLAR":
-            # Amount of income
-            print(f"\n**** AMOUNT OF INCOME({currency})*****")
-            amount, er_income = dollars_ksh()
+ 
+if __name__ == "__main__":
+    pass
+    #bee_status(2)
+    #insert_transaction_data()
+    net_company_fund()
 
 
-    # ****************EXPENDITURE*****************
-
-    elif co_fund_type == "EXPENDITURE":
-        # co_sub_type (expenditure)
-        filename = "files/co_expenditure_type.csv"
-        filetype = "company Expenditure type"
-        co_sub_type = project_setup(filename, filetype)
-
-        if co_sub_type == "SALARIES":
-            # typology salaries
-            filename = "files/co_salaries_allocation.csv"
-            filetype = "Company Salaries Allocation"
-            typology = project_setup(filename, filetype)
-
-        elif co_sub_type == "RUNNING_COST":
-            # typology running_cost
-            filename = "files/co_run_cost_type.csv"
-            filetype = "Company Running Cost type"
-            typology = project_setup(filename, filetype)
-
-        elif co_sub_type == "LOANS":
-            # typology loans
-            filename = "files/co_loan_allocation.csv"
-            filetype = "Company Loan Allocation"
-            typology = project_setup(filename, filetype)
-
-        # currency type
-        filename = "files/currency.csv"
-        filetype = "Type of currency"
-        currency = project_setup(filename, filetype)
-
-        # Amount expenditure
-        amount = input("insert expenditure:")
-
-    insert_into_pesafunds(time_key, funds_date, co_fund_type, co_sub_type, typology, currency, amount, er_income)
-    net_fund()
-
-
-
-def formode_funds():
-    """controlling fuds in the wallet"""
-    correct = True
-    while correct:
-        print("\n*******FORMODE FUNDS**************")
-        print("1) Add funds to wallet\n"
-              "2) Check net-funds\n"
-              "3) Check total-income\n"
-              "4) Check total-expenditure\n"
-              "5) Delete funds\n"
-              "0) Go back")
-        print("**********************************")
-        user_selection = int(input("insert option: "))
-
-        if user_selection == 1:
-            add_to_pesafunds()
-        elif user_selection == 2:
-            net_fund()
-        elif user_selection == 3:
-            income_breakdown()
-        elif user_selection == 4:
-            expenditure_breakdown()
-        elif user_selection == 5:
-            delete_from_pesafunds()
-        elif user_selection == 0:
-            correct = False
-            print("""Consistency is a key element, without which a leader is incapable of getting respect, 
-            success or even developing confidence in others.\nThank you!""")
-
-        else:
-            print("Wrong input, try again")
-
-
-def net_funds():
-    """displaying net funds"""
-    correct = True
-    while correct:
-        print("\n*******NET FUNDS**************")
-        print("1) Company Fund \n"
-              "2) Project Bees \n"
-              "0) Go back")
-        print("**********************************")
-        user_selection = int(input("insert option: "))
-
-        if user_selection == 1:
-            
-            # DEBITS
-            projects = total_projects_company_income()
-            er_income = total_er_income()
-            repayed_loans = total_repayed_loans_income()
-
-            # round the figures
-            projects = round(projects, 2)
-            er_income = round(er_income, 2)
-            repayed_loans = round(repayed_loans,2)
-
-            # sum the debits
-            debits = projects + er_income + repayed_loans
-            
-
-            # CREDITS
-            total_loans = total_company_expenditure_loans()
-            total_running_cost = total_company_expenditure_running_cost()
-
-            # round
-            total_loans = round(total_loans,2)
-            total_running_cost = round(total_running_cost,2)
-
-            # sum the credits
-            credits = total_loans + total_running_cost
-
-
-            # BALANCE
-            balance = debits - credits
-
-            # display information
-            print("\n*********NET COMPANY FUND********\n")
-            print("************DEBITS**************")
-            print(f"Total income- projects:{projects} /=")
-            print(f"Total income- er_income:{er_income} /=")
-            print(f"Total income- repayed loans:{repayed_loans} /=")
-            print("*********************************")
-            print(f"Total Debits :{debits} /=\n")
-
-
-            print("************CREDITS**************")
-            print(f"Total expenditure- running cost:{total_running_cost} /=")
-            print(f"Total expenditure- loans:{total_loans} /=")
-            print("*********************************")
-            print(f"Total Credits :{credits} /=\n")
-            
-            print("*********BALANCE**********")
-            print(f"Balance : {balance}/=")
-            
-        elif user_selection == 2:
-
-            # identify the project bee to query the debits/credits from
-
-            filename = "files/project_done_by.csv"
-            filetype = "project bee"
-            file_type_upper = str.upper(filetype)
-            project_user = project_setup(filename, filetype)
-
-            # credits
-            total_credit = project_bee_credit(project_user)
-
-            # debits
-
-            #cidentify the index of project user
-            with open(filename, "r") as f:
-                print(f"\n****{file_type_upper}*****")
-                iterable = csv.reader(f)
-                list_iterable = list(iterable)
-                for x in list_iterable:
-                    if x[1] == project_user:
-                        project_index = x[0]
-
-            # create the column id in the salaries_funds table
-            if project_user == "SYMON":
-                debit_user = "director_" + str(project_index)
-            elif project_user == "BRIAN":
-                debit_user = "director_" + str(project_index)
-            else:
-                debit_user = "employee_" + str(project_index)
-
-            total_debit = project_bee_debit(debit_user)
-
-            # balance
-            print(f"\n*********{project_user}********")
-            print(f"Total Debits :{total_debit} /=")
-            print(f"Total Credits :{total_credit} /=")
-            print("*********************************")
-            balance = f"{(total_debit) - (total_credit)}/="
-            print(balance)
-
-
-        elif user_selection == 0:
-            correct = False
-            print("""Consistency is a key element, without which a leader is incapable of getting respect, 
-            success or even developing confidence in others.\nThank you!""")
-        else:
-            print("Wrong input, try again")

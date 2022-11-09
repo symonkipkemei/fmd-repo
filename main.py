@@ -1,6 +1,5 @@
 
-from database.database_select_from_tables import *
-from sub_programs import *
+import sub_programs as sp
 
 def main():
     """ engine of the programme"""
@@ -21,43 +20,47 @@ def main():
                                                                                                
         """)
         print("*******FORMODE REPOSITORY**************")
-        print("1) Add project to database\n"
-              "2) Check earnings\n"
+        print("1) Add project data\n"
+              "2) Bee Financial stats\n"
               "3) Completed projects\n"
               "4) Active projects\n"
-              "5) Formode Fund\n"
+              "5) Add transaction data\n"
               "6) Net fund\n"
+              "7) Project calculator\n"
               "0) Quit")
         print("**************************************")
         user_selection = int(input("insert option: "))
 
         if user_selection == 1:
-            add_project_to_database()
-
+            sp.insert_project_data()
         # check earnings
         elif user_selection == 2:
-            view_salary()
+           sp.bee_status()
         # view complete projects
         elif user_selection == 3:
-            view_projects()
+            print("In progress")
         # view active projects
         elif user_selection == 4:
-            view_active_projects()
+            sp.mark_active_projects()
         # formode fund
         elif user_selection == 5:
-            formode_funds()
+            sp.insert_transaction_data()
         # settings
         elif user_selection == 6:
-            net_funds()
+            sp.net_company_fund()
+
+        elif user_selection == 7:
+            sp.project_calculator()
             
         # Quit
         elif user_selection == 0:
             correct = False
-            print("""Unless the Lord builds the house,
-    those who build it labor in vain.\nThank you!""")
-
+            print("""Unless the Lord builds the house,those who build it labor in vain.\nThank you!""")
         else:
             print("Wrong input, try again")
 
 
-main()
+
+if __name__ == "__main__":
+    main()
+
