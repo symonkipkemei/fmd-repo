@@ -201,13 +201,13 @@ def salaries_matrix(salary, bees_no_dict: dict):
 
 def display_fee_distribution(project_source_id,project_fund,timeline = True):
 
-    project_bounty,formode_fee,tax,salaries = project_funds_distribution_V3(project_source_id,project_fund,optical_illusion=True)
+    project_bounty,tax,formode_fee,salaries = project_funds_distribution_V3(project_source_id,project_fund,optical_illusion=True)
 
     print()
     print(f"Fee distribution (usd)")
     print("***************************************************")
     print(f"project bounty : {project_bounty}")
-    print(f"tax : {tax}")
+    print(f"Marketplace fee : {tax}")
     print(f"formode fee : {formode_fee}")
     print(f"Your fee : {salaries}")
 
@@ -278,11 +278,10 @@ def project_funds_distribution_V3(project_source_id, project_fund,optical_illusi
     tax = reality_tax + illusion_tax
     salaries = bee_fees
     project_bounty = real_fee
-    illusion_tax = illusion_tax
-    illusion_formode = illusion_formode_fee
+
 
     if optical_illusion is True:
-        package = (project_bounty,illusion_formode,illusion_tax,salaries)
+        package = (project_bounty,reality_tax,reality_formode_fee,salaries)
 
     else:
         package = (company_fund,salaries,tax)
