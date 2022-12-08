@@ -198,7 +198,7 @@ def bee_status():
     loans_repayed = co_transaction.loans_repayed(bee_no)
     loans_remainder = loans_issued - loans_repayed
     print("***************************************************")
-    print(f"Unpayed Salaries: {loans_remainder}")
+    print(f"Unpayed Loans: {loans_remainder}")
 
     print()
     print("***********************NET INCOME***********************")
@@ -279,7 +279,6 @@ def net_company_fund():
     print(f"NET INCOME: {returns}")
 
 
- 
 if __name__ == "__main__":
     pass
     #bee_status(2)
