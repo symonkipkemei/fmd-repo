@@ -22,12 +22,13 @@ def client_name()-> str:
     """
     
     global name
-    print("\n client name")
+    print("\n client name/ project name")
     print("***************************************************")
     while True:
         name = str.lower(input("insert name:"))
         if " " in name:
-            print("first and surname should be joined by hyphen\n")
+            name = name.replace(" ","_")
+            break
         elif name is None:
             print("a project must have a client, how do you pay bills, without him/her?")
         else:
@@ -259,8 +260,14 @@ def project_funds_distribution_V3(project_source_id, project_fund,optical_illusi
         bee_fees =round(0.9 * real_fee)
         reality_formode_fee = ( real_fee - ( reality_tax + bee_fees))
 
-    elif project_source_id == 3: #competition
-        print("Gopillar projects yet to be factored")
+    elif project_source_id == 3: #gopillar
+        #  illusion
+        illusion_tax = 0
+        illusion_formode_fee = optical_fee - illusion_tax
+        # reality 
+        reality_tax = 0
+        bee_fees =round(0.9 * real_fee)
+        reality_formode_fee = ( real_fee - ( reality_tax + bee_fees))
     
     elif project_source_id == 5: #paypal
         #  illusion
@@ -290,3 +297,6 @@ def project_funds_distribution_V3(project_source_id, project_fund,optical_illusi
 
 
 
+if __name__ == "__main__":
+    name = client_name()
+    print(name)
