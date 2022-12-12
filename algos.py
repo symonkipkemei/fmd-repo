@@ -204,8 +204,20 @@ def display_fee_distribution(project_source_id,project_fund,timeline = True):
 
     project_bounty,tax,formode_fee,salaries = project_funds_distribution_V3(project_source_id,project_fund,optical_illusion=True)
 
+    company_fund, salaries_repeat, tax = project_funds_distribution_V3(project_source_id,project_fund,optical_illusion=False)
+
     print()
-    print(f"Fee distribution (usd)")
+    print(f"Detail fee distribution(usd)")
+    print("***************************************************")
+    print(f"project fund : {project_fund}")
+    print(f"company fund : {company_fund}")
+    print(f"salaries fund : {salaries_repeat}")
+    print(f"tax : {tax}")
+    print("***************************************************")
+
+
+    print()
+    print(f"Bee Fee distribution (usd)")
     print("***************************************************")
     print(f"project bounty : {project_bounty}")
     print(f"Marketplace fee : {tax}")
