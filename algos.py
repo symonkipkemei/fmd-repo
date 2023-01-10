@@ -87,7 +87,7 @@ def date_setup(date_purpose:str)-> str:
             elif user_option == 2:
                 custom_date = datetime_enforcer("date", 1,31)
                 custom_month = datetime_enforcer("month",1,12)
-                custom_year = datetime_enforcer("year",2022,2022)
+                custom_year = datetime_enforcer("year",2022,2023)
                 print("***************************************************")
                 current_date = date(custom_year, custom_month, custom_date)
                 break
