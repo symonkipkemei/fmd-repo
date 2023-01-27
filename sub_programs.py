@@ -217,8 +217,8 @@ def project_calculator():
             project_fund = algos.project_fund("project fund",project_source_id,usd=True)
         elif choice == "k":
             project_fund = algos.project_fund("project fund",project_source_id,usd=False)
-        else:
-            print("error ocurred")
+    else:
+        project_fund = algos.project_fund("project fund",project_source_id,usd=True)
 
     algos.display_fee_distribution(project_source_id,project_fund,timeline=False)
 
