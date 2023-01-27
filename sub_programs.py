@@ -211,8 +211,15 @@ def project_calculator():
     print(f"project calculator")
     print("***************************************************")
     project_source_id = project_source.display_table("project_source")
-    project_fund = algos.project_fund("project fund",project_source_id)
-    
+    if project_source_id == 2:
+        choice = input("choose between usd(u) and ksh(k)")
+        if choice == "u":
+            project_fund = algos.project_fund("project fund",project_source_id,usd=True)
+        elif choice == "k":
+            project_fund = algos.project_fund("project fund",project_source_id,usd=False)
+        else:
+            print("error ocurred")
+
     algos.display_fee_distribution(project_source_id,project_fund,timeline=False)
 
     print("***************************************************")

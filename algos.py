@@ -136,11 +136,12 @@ def dollars_to_ksh():
 
 
 
-def project_fund(money_purpose,project_source_id):
+def project_fund(money_purpose,project_source_id,usd = True):
     """All project funds are recorded in usd
 
     Args:
         money_purpose (_type_): description of money type
+        project_source_id(int): select physical projects only then convert to usd
         usd (bool, optional): if not true amount is converted from ksh to usd. Defaults to True.
 
     Returns:
@@ -152,9 +153,10 @@ def project_fund(money_purpose,project_source_id):
         print("***************************************************")
         amount = float(input("Amount:"))
         print("***************************************************")
-   
-        exchange_rate = 110
-        amount = round(amount/exchange_rate)
+
+        if usd :
+            exchange_rate = 110
+            amount = round(amount/exchange_rate)
 
     else:
         print()
